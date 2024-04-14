@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "Parking EL MADANIA",
+    "commune": "EL MADANIA",
+    "imageResId": 1,
+    "capacity": 100,
+    "pricePerHour": 12.5,
+    "description": "Convenient parking near the city center.",
+    "rating": 4.2,
+    "longitude": 36.7406724,
+    "latitude": 3.0399674
+  },
+  {
+    "id": 2,
+    "name": "Parking Menani",
+    "commune": "Sidi M'Hamed",
+    "imageResId": 2,
+    "capacity": 150,
+    "pricePerHour": 10.0,
+    "description": "Spacious parking lot with easy access.",
+    "rating": 3.8,
+    "longitude": 36.7628252,
+    "latitude": 3.0361059
+  },
+  {
+    "id": 3,
+    "name": "Parking Ahmed Adim",
+    "commune": "Belouizdad",
+    "imageResId": 3,
+    "capacity": 80,
+    "pricePerHour": 15.0,
+    "description": "Modern parking structure with valet service.",
+    "rating": 4.5,
+    "longitude": 36.7592031,
+    "latitude": 3.0519707
+  },
+  {
+    "id": 4,
+    "name": "Parking Riad El Fath",
+    "commune": "EL MADANIA",
+    "imageResId": 4,
+    "capacity": 120,
+    "pricePerHour": 11.0,
+    "description": "Affordable parking option near shopping district.",
+    "rating": 4.0,
+    "longitude": 44.8378,
+    "latitude": -0.5792
+  }
+]
