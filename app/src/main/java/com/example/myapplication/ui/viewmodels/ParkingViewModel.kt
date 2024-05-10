@@ -1,6 +1,9 @@
 package com.example.myapplication.ui.viewmodels
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -15,7 +18,9 @@ class ParkingViewModel(private val parkingRepository: parkingRepository): ViewMo
     val data = mutableStateOf(listOf<Parking>())
     val loading = mutableStateOf(false)
     val displayMessage = mutableStateOf(false)
-
+    val _parking = mutableStateOf<Parking?>(null)
+   // val _parking = MutableLiveData<Parking>()
+   // val parking: LiveData<Parking> = _parking
     fun getAllparkings(){
         loading.value=true
         viewModelScope.launch {
@@ -34,6 +39,19 @@ class ParkingViewModel(private val parkingRepository: parkingRepository): ViewMo
         }
 
 
+    }
+    fun getParkingById(parkingId: Int) {
+        loading.value=true
+        viewModelScope.launch {
+            val response = parkingRepository.getParkingById(parkingId)
+            loading.value = false
+            if (response.isSuccessful) {
+                _parking.value = response.body()
+            } else {
+                // Handle error
+                Log.e("ParkingViewModel", "Failed to get parking: ${response.message()}")
+            }
+        }
     }
     /*
 

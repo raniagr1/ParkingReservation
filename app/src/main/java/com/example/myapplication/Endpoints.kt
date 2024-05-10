@@ -6,11 +6,14 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 
 interface Endpoint {
     @GET("getparkings.php")
     suspend fun getparkings() : Response<List<Parking>>
+    @GET("getparkingbyid.php")
+    suspend fun getParkingById(@Query("parkingId") parkingId: Int): Response<Parking>
 
     companion object {
         @Volatile

@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.myapplication.ui.screens.DisplayDetail
 import com.example.myapplication.ui.screens.Displayparkings
 import com.example.myapplication.ui.theme.myapplicationTheme
 import com.example.myapplication.ui.viewmodels.ParkingViewModel
@@ -59,10 +60,10 @@ fun NavigationExample(navController: NavHostController, parkingViewModel: Parkin
 
         androidx.navigation.compose.NavHost(navController = navController, startDestination = "ParkingScreen") {
           composable(Destination.List.route) { ParkingScreen(parkingViewModel, navController) }
-         /*   composable(Destination.Details.route) {
+            composable(Destination.Details.route) {
                 val parkId = it.arguments?.getString("parkId")?.toInt()
-                DisplayDetail(parkId ?: 0, parkingViewModel,navController)
-            }*/
+                DisplayDetail(parkId ?: 1, parkingViewModel,navController)
+            }
 
          /*   composable(Destination.Reservation.route) { ReservationBookingScreen( ) }
             composable(Destination.MyReservations.route) { MyReservationsScreen(reservationViewModel )
