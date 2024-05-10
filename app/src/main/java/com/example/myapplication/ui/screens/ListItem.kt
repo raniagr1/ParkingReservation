@@ -1,5 +1,5 @@
 package com.example.myapplication.ui.screens
-/*
+
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -38,8 +38,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.myapplication.Destination
-import com.example.myapplication.R
 import com.example.myapplication.data.model.Parking
+import com.example.trying.R
+
 @Composable
 fun ParkingListItem(parking: Parking, navController: NavHostController) {
     Card(
@@ -122,4 +123,4 @@ fun ParkingListItem(parking: Parking, navController: NavHostController) {
             }
         }
     }
-}*/
+}

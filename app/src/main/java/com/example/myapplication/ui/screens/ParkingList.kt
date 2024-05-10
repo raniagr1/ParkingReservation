@@ -23,10 +23,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.myapplication.ui.viewmodels.ParkingViewModel
 
 @Composable
-fun Displayparkings(parkingModel: ParkingViewModel) {
+fun Displayparkings(parkingModel: ParkingViewModel, navController: NavHostController) {
 
     val context = LocalContext.current
     Column (verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){

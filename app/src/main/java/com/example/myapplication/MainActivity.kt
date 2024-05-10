@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import ParkingScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,6 +19,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.ui.screens.Displayparkings
 import com.example.myapplication.ui.theme.myapplicationTheme
 import com.example.myapplication.ui.viewmodels.ParkingViewModel
@@ -36,16 +40,35 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize() ,
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    val navController = rememberNavController()
                    /* var i = remember { mutableStateOf(0) }
                     val onClick = { i.value+=1 }
                     Count(i.value,onClick)*/
-                    Displayparkings(pModel)
+                    NavigationExample(navController = rememberNavController(),pModel)
+
+                   // Displayparkings(pModel, navController)
                             pModel.getAllparkings()
 
                 }
             }
         }
     }
+}
+@Composable
+fun NavigationExample(navController: NavHostController, parkingViewModel: ParkingViewModel){
+
+        androidx.navigation.compose.NavHost(navController = navController, startDestination = "ParkingScreen") {
+          composable(Destination.List.route) { ParkingScreen(parkingViewModel, navController) }
+         /*   composable(Destination.Details.route) {
+                val parkId = it.arguments?.getString("parkId")?.toInt()
+                DisplayDetail(parkId ?: 0, parkingViewModel,navController)
+            }*/
+
+         /*   composable(Destination.Reservation.route) { ReservationBookingScreen( ) }
+            composable(Destination.MyReservations.route) { MyReservationsScreen(reservationViewModel )
+             }*/
+
+        }
 }
 
 @Composable
