@@ -60,9 +60,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import com.example.trying.data.database.AppDatabase
 import com.example.trying.ui.screens.HomePage
+import com.example.trying.ui.screens.MyReservationsScreen
+import com.example.trying.ui.screens.ReservationBookingScreen
 
 import com.example.trying.ui.theme.TryingTheme
 import com.example.trying.ui.viewmodels.ParkingViewModel
+import com.example.trying.ui.viewmodels.ReservationsViewModel
 
 class MainActivity : ComponentActivity() {
     private val db by lazy {
@@ -77,13 +80,21 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+    private val reservationViewModel by viewModels<ReservationsViewModel> {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+
+                return ReservationsViewModel(db.reservationDao()) as T
+            }
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val homeTab = TabBarItem(title = "Home", selectedIcon = Icons.Filled.Home, unselectedIcon = Icons.Outlined.Home, destination =Destination.Home.route )
             val parkingListTab = TabBarItem(title = "Parking List", selectedIcon = Icons.Filled.List, unselectedIcon = Icons.Outlined.List, badgeAmount = 7, destination =Destination.List.route )
             val mapTab = TabBarItem(title = "Map", selectedIcon = Icons.Filled.LocationOn, unselectedIcon = Icons.Outlined.LocationOn, destination =Destination.Home.route )
-            val myReservationsTab = TabBarItem(title = "my Reservations", selectedIcon = Icons.Filled.DateRange, unselectedIcon = Icons.Outlined.DateRange, destination =Destination.Home.route )
+            val myReservationsTab = TabBarItem(title = "my Reservations", selectedIcon = Icons.Filled.DateRange, unselectedIcon = Icons.Outlined.DateRange, destination =Destination.MyReservations.route )
 
             // creating a list of all the tabs
             val tabBarItems = listOf(homeTab, parkingListTab, mapTab, myReservationsTab)
@@ -97,7 +108,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val navController = rememberNavController()
                     TopPart()
-                    NavigationExample(navController = rememberNavController(),viewModel,tabBarItems)
+                    NavigationExample(navController = rememberNavController(),viewModel,tabBarItems, reservationViewModel)
                 }
             }
         }
@@ -106,15 +117,18 @@ class MainActivity : ComponentActivity() {
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun NavigationExample(navController: NavHostController, parkingViewModel: ParkingViewModel,tabBarItems :List<TabBarItem>) {
+fun NavigationExample(navController: NavHostController, parkingViewModel: ParkingViewModel,tabBarItems :List<TabBarItem>,reservationViewModel: ReservationsViewModel){
     Scaffold(bottomBar = { TabView(tabBarItems, navController) }) {
     androidx.navigation.compose.NavHost(navController = navController, startDestination = "ParkingScreen") {
         composable(Destination.Home.route) { HomePage( navController) }
         composable(Destination.List.route) { ParkingScreen(parkingViewModel, navController) }
         composable(Destination.Details.route) {
             val parkId = it.arguments?.getString("parkId")?.toInt()
-            DisplayDetail(parkId ?: 0, parkingViewModel)
+            DisplayDetail(parkId ?: 0, parkingViewModel,navController)
         }
+
+        composable(Destination.Reservation.route) { ReservationBookingScreen( ) }
+        composable(Destination.MyReservations.route) { MyReservationsScreen(reservationViewModel ) }
     }}
 }
 data class TabBarItem(

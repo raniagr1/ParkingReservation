@@ -44,6 +44,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.example.trying.Destination
 import com.example.trying.R
 import com.example.trying.data.model.Parking
 import com.example.trying.ui.screens.ParkingDetailItem
@@ -51,7 +53,7 @@ import com.example.trying.ui.viewmodels.ParkingViewModel
 
 
 @Composable
-fun DisplayDetail(parkingId: Int?, parkingViewModel: ParkingViewModel?) {
+fun DisplayDetail(parkingId: Int?, parkingViewModel: ParkingViewModel?, navController: NavHostController) {
     var parking by remember {
         mutableStateOf<Parking?>(null)
     }
@@ -146,9 +148,9 @@ fun DisplayDetail(parkingId: Int?, parkingViewModel: ParkingViewModel?) {
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Blue
                     ),
-                    onClick = { /*TODO*/ }) {
+                    onClick = {navController.navigate(Destination.Reservation.route)  }) {
                     Text(
-                        text = "Next",
+                        text = "Book a place",
                         color = Color.White,
                         fontSize = 14.sp
                     )
