@@ -19,7 +19,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.example.myapplication.Destination
+import com.example.myapplication.URL
 import com.example.myapplication.data.model.Parking
 import com.example.myapplication.ui.viewmodels.ParkingViewModel
 import com.example.trying.R
@@ -50,11 +52,13 @@ fun DisplayDetail(parkingId: Int, parkingViewModel: ParkingViewModel?, navContro
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    modifier = Modifier.size(200.dp),
-                    painter = painterResource(id = R.drawable.car2),
-                    contentDescription = "Tomato Image",
-                    contentScale = ContentScale.Crop
+                AsyncImage(
+                    model = URL +park.image
+                    ,
+
+                    placeholder = painterResource(id = R.drawable.parking3),
+                    error = painterResource(id = R.drawable.parking3),
+                    contentDescription = null
                 )
             }
             Spacer(modifier = Modifier.height(44.dp))

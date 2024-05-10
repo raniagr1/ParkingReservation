@@ -37,7 +37,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.example.myapplication.Destination
+import com.example.myapplication.URL
 import com.example.myapplication.data.model.Parking
 import com.example.trying.R
 
@@ -56,8 +58,16 @@ fun ParkingListItem(parking: Parking, navController: NavHostController) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(8.dp)
         ) {
+            AsyncImage(
+                model = URL+parking.image
+                ,
+
+               // placeholder = painterResource(id = R.drawable.parking3),
+                error = painterResource(id = R.drawable.parking3),
+                contentDescription = null
+            )
             // Parking Image
-            Image(
+        /*    Image(
                 painter = painterResource(id = R.drawable.car2), // Replace with actual image resource
                 contentDescription = "Parking Image",
                 modifier = Modifier
@@ -65,7 +75,7 @@ fun ParkingListItem(parking: Parking, navController: NavHostController) {
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop
             )
-
+*/
             Spacer(modifier = Modifier.width(16.dp))
 
             // Parking Information
