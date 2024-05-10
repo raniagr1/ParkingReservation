@@ -64,7 +64,11 @@ fun ParkingListItem(parking: Parking, navController: NavHostController) {
 
                // placeholder = painterResource(id = R.drawable.parking3),
                 error = painterResource(id = R.drawable.parking3),
-                contentDescription = null
+                contentDescription = null,
+                        modifier = Modifier
+                        .size(80.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
             )
             // Parking Image
         /*    Image(
