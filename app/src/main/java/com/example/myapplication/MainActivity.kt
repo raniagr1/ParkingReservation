@@ -24,12 +24,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.ui.screens.DisplayDetail
 import com.example.myapplication.ui.screens.Displayparkings
+import com.example.myapplication.ui.screens.ReservationBookingScreen
 import com.example.myapplication.ui.theme.myapplicationTheme
 import com.example.myapplication.ui.viewmodels.ParkingViewModel
+import com.example.myapplication.ui.viewmodels.ReservationsViewModel
 
 class MainActivity : ComponentActivity() {
     private val pModel : ParkingViewModel by viewModels {
         ParkingViewModel.Factory((application as MyApplication).parkingRepository)
+    }
+    private val rModel : ReservationsViewModel by viewModels {
+        ReservationsViewModel.Factory((application as MyApplication).reservationRepository)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +50,7 @@ class MainActivity : ComponentActivity() {
                    /* var i = remember { mutableStateOf(0) }
                     val onClick = { i.value+=1 }
                     Count(i.value,onClick)*/
-                    NavigationExample(navController = rememberNavController(),pModel)
+                    NavigationExample(navController = rememberNavController(),pModel,rModel)
 
                    // Displayparkings(pModel, navController)
                             pModel.getAllparkings()
@@ -56,7 +61,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 @Composable
-fun NavigationExample(navController: NavHostController, parkingViewModel: ParkingViewModel){
+fun NavigationExample(navController: NavHostController, parkingViewModel: ParkingViewModel,reservationsViewModel: ReservationsViewModel){
 
         androidx.navigation.compose.NavHost(navController = navController, startDestination = "ParkingScreen") {
           composable(Destination.List.route) { ParkingScreen(parkingViewModel, navController) }
@@ -64,7 +69,10 @@ fun NavigationExample(navController: NavHostController, parkingViewModel: Parkin
                 val parkId = it.arguments?.getString("parkId")?.toInt()
                 DisplayDetail(parkId ?: 1, parkingViewModel,navController)
             }
-
+            composable(Destination.Reservation.route) {
+                val parkId = it.arguments?.getString("parkId")?.toInt()
+                ReservationBookingScreen(parkId ?: 1, reservationsViewModel, parkingViewModel)
+            }
          /*   composable(Destination.Reservation.route) { ReservationBookingScreen( ) }
             composable(Destination.MyReservations.route) { MyReservationsScreen(reservationViewModel )
              }*/

@@ -66,7 +66,7 @@ fun DisplayDetail(parkingId: Int, parkingViewModel: ParkingViewModel?, navContro
                 modifier = Modifier
                     .fillMaxHeight()
                     .clip(RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp))
-                    .background(Color.Blue)
+                    .background(Color(0xFFCCCCCC))
                     .padding(24.dp)
             )
             {
@@ -123,9 +123,10 @@ fun DisplayDetail(parkingId: Int, parkingViewModel: ParkingViewModel?, navContro
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Blue
+                        containerColor = Color(0xFFADD8E6)
                     ),
-                    onClick = {navController.navigate(Destination.Reservation.route)  }) {
+                    onClick = { navController.navigate(Destination.Reservation.createRoute(park.id))
+                    }) {
                     Text(
                         text = "Book a place",
                         color = Color.White,
