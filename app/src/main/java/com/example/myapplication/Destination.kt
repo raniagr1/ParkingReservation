@@ -10,4 +10,6 @@ sealed class Destination(val route:String) {
         fun createRoute(parkId:Int) = "Reservation/$parkId"
     }
     object  MyReservations:Destination("MyReservations")
+    object  Login:Destination("LoginPage")
+    object  SignUpPage:Destination("SignUpPage")
 }

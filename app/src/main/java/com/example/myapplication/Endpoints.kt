@@ -1,8 +1,11 @@
 package com.example.myapplication
 
 import com.example.myapplication.URL
+import com.example.myapplication.data.model.DataClass
+import com.example.myapplication.data.model.LoginRequest
 import com.example.myapplication.data.model.Parking
 import com.example.myapplication.data.model.Reservation
+import com.example.myapplication.data.model.User
 import com.google.gson.annotations.SerializedName
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -22,6 +25,11 @@ interface Endpoint {
   /*  @GET("getparkingbyid.php")
     suspend fun getParkingById(@Query("parkingId") parkingId: Int): Response<Parking>
 */
+    @POST("insertuser.php")
+    suspend fun registerUser(@Body user: User): Response<Unit>
+    @POST("userExist.php")
+    suspend fun userExist(@Body loginRequest: LoginRequest): Response<DataClass>
+
     @POST("check_available_places.php")
     suspend fun checkAvailablePlaces(@Body requestData: CheckAvailablePlacesRequest): Response<CheckAvailablePlacesResponse>
 

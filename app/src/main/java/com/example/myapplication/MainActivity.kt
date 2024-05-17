@@ -7,27 +7,57 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.List
+import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.ui.screens.DisplayDetail
 import com.example.myapplication.ui.screens.Displayparkings
+import com.example.myapplication.ui.screens.LoginPage
+import com.example.myapplication.ui.screens.MyReservationsScreen
 import com.example.myapplication.ui.screens.ReservationBookingScreen
+import com.example.myapplication.ui.screens.SignUpPage
 import com.example.myapplication.ui.theme.myapplicationTheme
 import com.example.myapplication.ui.viewmodels.ParkingViewModel
 import com.example.myapplication.ui.viewmodels.ReservationsViewModel
+import com.example.myapplication.ui.viewmodels.UserViewModel
+import kotlinx.coroutines.CoroutineScope
 
 class MainActivity : ComponentActivity() {
     private val pModel : ParkingViewModel by viewModels {
@@ -36,9 +66,23 @@ class MainActivity : ComponentActivity() {
     private val rModel : ReservationsViewModel by viewModels {
         ReservationsViewModel.Factory((application as MyApplication).reservationRepository)
     }
+    private val userModel : UserViewModel by viewModels {
+        UserViewModel.Factory((application as MyApplication).userRepository)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
+            val homeTab = TabBarItem(title = "Home", selectedIcon = Icons.Filled.Home, unselectedIcon = Icons.Outlined.Home, destination =Destination.Home.route )
+            val parkingListTab = TabBarItem(title = "Parking List", selectedIcon = Icons.Filled.List, unselectedIcon = Icons.Outlined.List, badgeAmount = 7, destination =Destination.List.route )
+            val mapTab = TabBarItem(title = "Map", selectedIcon = Icons.Filled.LocationOn, unselectedIcon = Icons.Outlined.LocationOn, destination =Destination.Home.route )
+            val myReservationsTab = TabBarItem(title = "my Reservations", selectedIcon = Icons.Filled.DateRange, unselectedIcon = Icons.Outlined.DateRange, destination =Destination.MyReservations.route )
+
+            // Define a coroutine scope
+            val coroutineScope = lifecycleScope
+            // creating a list of all the tabs
+            val tabBarItems = listOf(homeTab, parkingListTab, mapTab, myReservationsTab)
+
             myapplicationTheme {
 
                 // A surface container using the 'background' color from the theme
@@ -47,37 +91,76 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                   /* var i = remember { mutableStateOf(0) }
-                    val onClick = { i.value+=1 }
-                    Count(i.value,onClick)*/
-                    NavigationExample(navController = rememberNavController(),pModel,rModel)
+                    /* var i = remember { mutableStateOf(0) }
+                     val onClick = { i.value+=1 }
+                     Count(i.value,onClick)*/
+                    NavigationExample(navController = rememberNavController(),tabBarItems,pModel,userModel,rModel,coroutineScope)
 
-                   // Displayparkings(pModel, navController)
-                            pModel.getAllparkings()
+                    // Displayparkings(pModel, navController)
+                    pModel.getAllparkings()
 
                 }
             }
         }
     }
 }
+//@Composable
+//fun NavigationExample(navController: NavHostController, parkingViewModel: ParkingViewModel,reservationsViewModel: ReservationsViewModel){
+//
+//        androidx.navigation.compose.NavHost(navController = navController, startDestination = "ParkingScreen") {
+//          composable(Destination.List.route) { ParkingScreen(parkingViewModel, navController) }
+//            composable(Destination.Details.route) {
+//                val parkId = it.arguments?.getString("parkId")?.toInt()
+//                DisplayDetail(parkId ?: 1, parkingViewModel,navController)
+//            }
+//            composable(Destination.Reservation.route) {
+//                val parkId = it.arguments?.getString("parkId")?.toInt()
+//                ReservationBookingScreen(parkId ?: 1, reservationsViewModel, parkingViewModel)
+//            }
+//         /*   composable(Destination.Reservation.route) { ReservationBookingScreen( ) }
+//            composable(Destination.MyReservations.route) { MyReservationsScreen(reservationViewModel )
+//             }*/
+//
+//        }
+//}
 @Composable
-fun NavigationExample(navController: NavHostController, parkingViewModel: ParkingViewModel,reservationsViewModel: ReservationsViewModel){
+fun NavigationExample(navController: NavHostController, tabBarItems: List<TabBarItem>, parkingViewModel: ParkingViewModel, userViewModel: UserViewModel,reservationsViewModel: ReservationsViewModel,coroutineScope: CoroutineScope) {
+    Scaffold(
+        bottomBar = { TabView(tabBarItems, navController) },
+        content = { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize() // Ensure content fills the available space
+            ) {
+                NavHost(navController = navController, startDestination = "ParkingScreen") {
+                    composable(Destination.List.route) { ParkingScreen(parkingViewModel, navController) }
+                    composable(Destination.Details.route) {
+                        val parkId = it.arguments?.getString("parkId")?.toInt()
+                        DisplayDetail(parkId ?: 1, parkingViewModel, navController)
+                    }
 
-        androidx.navigation.compose.NavHost(navController = navController, startDestination = "ParkingScreen") {
-          composable(Destination.List.route) { ParkingScreen(parkingViewModel, navController) }
-            composable(Destination.Details.route) {
-                val parkId = it.arguments?.getString("parkId")?.toInt()
-                DisplayDetail(parkId ?: 1, parkingViewModel,navController)
-            }
-            composable(Destination.Reservation.route) {
-                val parkId = it.arguments?.getString("parkId")?.toInt()
-                ReservationBookingScreen(parkId ?: 1, reservationsViewModel, parkingViewModel)
-            }
-         /*   composable(Destination.Reservation.route) { ReservationBookingScreen( ) }
-            composable(Destination.MyReservations.route) { MyReservationsScreen(reservationViewModel )
-             }*/
+                    composable(Destination.Reservation.route) {
+                        val parkId = it.arguments?.getString("parkId")?.toInt()
+                        ReservationBookingScreen(parkId ?: 1, reservationsViewModel, parkingViewModel)
+                    }
 
+                    composable(Destination.MyReservations.route) {
+                        MyReservationsScreen(
+                            userViewModel,
+                            navController
+                        )
+                    }
+                    composable(Destination.SignUpPage.route) { SignUpPage(navController,userViewModel,coroutineScope) }
+                    composable(Destination.Login.route) { LoginPage(navController,userViewModel) }
+
+                    /*   composable(Destination.Reservation.route) { ReservationBookingScreen( ) }
+                    composable(Destination.MyReservations.route) { MyReservationsScreen(reservationViewModel )
+                     }*/
+                }
+            }
         }
+    )
 }
 
 @Composable
@@ -96,7 +179,75 @@ fun Count(i:Int,onClick:()->Unit) {
         }
 
         }
+}
+
+data class TabBarItem(
+    val title: String,
+    val selectedIcon: ImageVector,
+    val unselectedIcon: ImageVector,
+    val badgeAmount: Int? = null,
+    val destination:String
+)
+
+@Composable
+fun TabView(tabBarItems: List<TabBarItem>, navController: NavController) {
+    var selectedTabIndex by rememberSaveable {
+        mutableStateOf(0)
     }
+
+    NavigationBar {
+        // looping over each tab to generate the views and navigation for each item
+        tabBarItems.forEachIndexed { index, tabBarItem ->
+            NavigationBarItem(
+                selected = selectedTabIndex == index,
+                onClick = {
+                    selectedTabIndex = index
+                    navController.navigate(tabBarItem.destination)
+                },
+                icon = {
+                    TabBarIconView(
+                        isSelected = selectedTabIndex == index,
+                        selectedIcon = tabBarItem.selectedIcon,
+                        unselectedIcon = tabBarItem.unselectedIcon,
+                        title = tabBarItem.title,
+                        badgeAmount = tabBarItem.badgeAmount
+                    )
+                },
+                label = {Text(tabBarItem.title)})
+        }
+    }
+}
+
+// This component helps to clean up the API call from our TabView above,
+// but could just as easily be added inside the TabView without creating this custom component
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TabBarIconView(
+    isSelected: Boolean,
+    selectedIcon: ImageVector,
+    unselectedIcon: ImageVector,
+    title: String,
+    badgeAmount: Int? = null
+) {
+    BadgedBox(badge = { TabBarBadgeView(badgeAmount) }) {
+        Icon(
+            imageVector = if (isSelected) {selectedIcon} else {unselectedIcon},
+            contentDescription = title
+        )
+    }
+}
+
+// This component helps to clean up the API call from our TabBarIconView above,
+// but could just as easily be added inside the TabBarIconView without creating this custom component
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+fun TabBarBadgeView(count: Int? = null) {
+    if (count != null) {
+        Badge {
+            Text(count.toString())
+        }
+    }
+}
 
 /*
 *

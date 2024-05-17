@@ -1,5 +1,4 @@
 package com.example.myapplication.data.model
-/*
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -18,4 +17,3 @@ data class User(
 
     var passwrd: String
 )
-*/
