@@ -14,6 +14,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.model.DataClass
+import com.example.myapplication.data.model.LoginRequest
 import com.example.myapplication.data.model.Parking
 import com.example.myapplication.data.repository.parkingRepository
 import com.example.myapplication.data.repository.userRepository
@@ -34,13 +35,36 @@ class UserViewModel(private val userRepository: userRepository): ViewModel() {
     private val _isLoggedIn = MutableStateFlow(false)
     val isLoggedIn: StateFlow<Boolean>
         get() = _isLoggedIn
-    var loginResult = mutableStateOf<DataClass?>(null)
-        private set
+//    var loginResult = mutableStateOf<DataClass?>(null)
+//        private set
 
-    fun checkUserExistence(userName: String, passwrd: String) {
+    // StateFlow to hold the login result
+    private val _loginResult = MutableStateFlow<DataClass?>(null)
+    val loginResult: StateFlow<DataClass?> = _loginResult
+
+    // Function to update the login result
+    fun updateLoginResult(result: DataClass) {
+        _loginResult.value = result
+    }
+    fun checkUserExistence(loginRequest: LoginRequest) {
         viewModelScope.launch {
-            val response = userRepository.userExist(userName, passwrd)
-            loginResult.value = response.body()
+            // Call the userExists function from the repository
+            val response = userRepository.userExists(loginRequest)
+
+            try {
+                // Handle the response
+                if (response.isSuccessful) {
+                    // Successful response
+                    _loginResult.value = DataClass(success = true, message = response.message())
+                } else {
+                    // Unsuccessful response
+                    _loginResult.value = DataClass(success = false, message = response.message())
+                }
+            } catch (e: Exception) {
+                // Handle exceptions
+                _loginResult.value = DataClass(success = false, message = response.message())
+                e.printStackTrace()
+            }
         }
     }
     // val _parking = MutableLiveData<Parking>()

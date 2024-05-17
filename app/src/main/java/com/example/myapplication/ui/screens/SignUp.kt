@@ -104,6 +104,8 @@ fun SignUpScreen(navController: NavHostController,userViewModel: UserViewModel,c
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = TextStyle(color = Color.Black)
             )
+
+
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -112,7 +114,6 @@ fun SignUpScreen(navController: NavHostController,userViewModel: UserViewModel,c
                 textStyle = TextStyle(color = Color.Black),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
             )
-
             CustomButton(
                 onClick = {
                     val newUser = User(
@@ -124,6 +125,7 @@ fun SignUpScreen(navController: NavHostController,userViewModel: UserViewModel,c
                     coroutineScope.launch {
                         val isSuccess = userViewModel.registerUser(newUser)
                         if (isSuccess) {
+                            userViewModel.loggedin()
                             // Registration successful, navigate to reservations page
                             navController.navigate(Destination.MyReservations.route)
                         } else {

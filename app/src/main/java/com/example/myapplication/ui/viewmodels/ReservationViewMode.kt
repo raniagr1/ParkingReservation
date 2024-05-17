@@ -52,7 +52,7 @@ class ReservationsViewModel(private val repository: ReservationRepository) : Vie
             }
         }}
        // return repository
-    }
+     }
   /*  fun checkAvailablePlaces(parkingId: Int , date: String):Int {
         val dateFormatter = SimpleDateFormat("yyyy-MM-dd")
         val parsedDate: java.util.Date? = dateFormatter.parse(date)

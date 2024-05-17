@@ -12,8 +12,8 @@ class userRepository(private val endpoint: Endpoint) {
     suspend fun registerUser(user: User): Response<Unit> {
         return endpoint.registerUser(user)
     }
-    suspend fun userExist(userName: String, passwrd: String): Response<DataClass> {
-        val loginRequest = LoginRequest(userName, passwrd)
+    suspend fun userExists(loginRequest:LoginRequest ): Response<DataClass> {
+//        val loginRequest = LoginRequest(userName, passwrd)
         return endpoint.userExist(loginRequest)
     }
     /* suspend fun getParkingById(parkingId: Int?): Parking? {

@@ -43,6 +43,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun MyReservationsScreen(userViewModel: UserViewModel,navController: NavHostController
 ) {
+// Access isLoggedIn state from UserViewModel
     val isLoggedIn by userViewModel.isLoggedIn.collectAsState()
 
     if (isLoggedIn) {

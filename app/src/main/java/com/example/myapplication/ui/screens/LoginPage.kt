@@ -38,6 +38,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch // Add this import
 import kotlinx.coroutines.withContext
 import androidx.compose.runtime.collectAsState
+import com.example.myapplication.data.model.LoginRequest
+
 
 @Composable
 fun LoginPage(navController: NavHostController,userViewModel: UserViewModel) {
@@ -61,6 +63,7 @@ fun LoginPage(navController: NavHostController,userViewModel: UserViewModel) {
 
     }
 }
+
 @Composable
 fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel) {
     var username by remember { mutableStateOf("") }
@@ -68,20 +71,16 @@ fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel) 
     val Black = Color(0xFF000000)
     val White = Color(0xFFFFFFFF) // Define white color
     val context = LocalContext.current
-    // Get the login result from the ViewModel
-    val loginResult by remember { userViewModel.loginResult }
+    // Collect login result as state
+    val loginResultState = userViewModel.loginResult.collectAsState()
 
-    // Handle login result state changes
-    LaunchedEffect(loginResult) {
-        loginResult?.let {
-            if (it.success) {
-                userViewModel.loggedin()
-                Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
-                navController.navigate(Destination.MyReservations.route)
-            } else {
-                Toast.makeText(context, "Invalid username or password", Toast.LENGTH_SHORT).show()
-            }
-        }
+    // Access the value from the State object
+    val loginResult = loginResultState.value
+
+    // Handle login button click
+    val onLoginClick: () -> Unit = {
+        val loginRequest = LoginRequest(username, password)
+        userViewModel.checkUserExistence(loginRequest)
     }
 
 
@@ -131,9 +130,19 @@ fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel) 
             // Login Button
             CustomButton(
                 onClick = {
+                    val loginRequest = LoginRequest(username, password)
+                    userViewModel.checkUserExistence(loginRequest)
+                    // Display login result
+                    if (loginResult != null) {
+                        if (loginResult.success) {
+                            userViewModel.loggedin()
+                            Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
+                            navController.navigate(Destination.MyReservations.route)
+                        } else {
+                             Toast.makeText(context, "Invalid username or password", Toast.LENGTH_SHORT).show()
+                        }
+                    }}, // Call userExists when clicked
 
-                    userViewModel.checkUserExistence(username, password)
-                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(40.dp),
@@ -142,6 +151,7 @@ fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel) 
             ) {
                 Text("Sign in", color = Color.White)
             }
+
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 "Don't have an account? ",
@@ -205,8 +215,6 @@ fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel) 
         }
     }
 }
-
-
 
 @Composable
 fun CustomButton(
