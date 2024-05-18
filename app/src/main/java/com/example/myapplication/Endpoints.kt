@@ -27,6 +27,8 @@ interface Endpoint {
 
     @POST("createreservation.php")
     suspend fun createReservation(@Body reservation: Reservation): Response<Reservation>
+    @POST("insert_reservation.php")
+    suspend fun insertReservation(@Body reservation: Reservation): Response<ReservationResponse>
 
     companion object {
         @Volatile
@@ -55,4 +57,10 @@ data class CheckAvailablePlacesRequest(
 
 data class CheckAvailablePlacesResponse(
     val reserved_places_total: Int
+)
+
+data class ReservationResponse(
+    val status: String,
+    val message: String,
+    val reservationId: Int? = null
 )

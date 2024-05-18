@@ -5,18 +5,17 @@ import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import java.util.Date
 
-@Entity(tableName = "reservations",
-  )
+@Entity(tableName = "reservations")
 data class Reservation(
     @PrimaryKey val reservationId: Int = 0,
-    //numReservation is the value returned in the reservation from the server
-    val placeId: Int,
+    val parkId: Int,
     val userId: Int,
     val date: Date,
-    @Ignore  val dateString:String,
     val entryTime: String,
     val exitTime: String,
-    val paymentValidated: Boolean,
+    val paymentValidated: Boolean
+) {
+    @Ignore
+    var dateString: String = ""
+}
 
-
-)

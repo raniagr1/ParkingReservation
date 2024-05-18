@@ -67,6 +67,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -124,7 +125,9 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
         val entryTimePickerState = rememberTimePickerState()
         val exitTimePickerState = rememberTimePickerState()
         var parking by remember { mutableStateOf<Parking?>(null) }
-       // val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy-MM-dd") }
+        val missingFields = remember { mutableStateOf("") }
+
+        // val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy-MM-dd") }
 
         LaunchedEffect(key1 = parkingId) {
             if (parkingViewModel != null) {
@@ -386,22 +389,31 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
                 Text(text ="The total for park ${parking!!.id} price is ${calculatedPrice} DA" , color = Color(0xFFADD8E6))
                 Button(
                     onClick = {
-                        if ( dateState.value !="") {
-                         val   availablePlaces= CheckAvailablePlacesRequest(
-                             parkingId=parking!!.id,
-                             date=dateState.value
-                         );
-                            reservationVM.checkAvailablePlaces(availablePlaces)
-                          // Text(text = reservationVM.availablePlaces.value.toString())
+                        if (( dateState.value !="")&&( entryTimeState.value !="")&&( exitTimeState.value !="")) {
+                            val formattedDate = convertStringToDate(dateState.value)
 
-                           /* Toast
-                                .makeText(context,  reservationVM.checkAvailablePlaces(parkingId, dateState.value), Toast.LENGTH_SHORT)
-                                .show()*/
+                            // Assuming all required fields are filled
+                            val reservation = Reservation(
+                                parkId = parking?.id!!,
+                                userId = 1,
+                                date = formattedDate,
+                                entryTime = entryTimeState.value,
+                                exitTime = exitTimeState.value,
+                                  paymentValidated = true // Payment is already validated
+                            ).apply {
+                                dateString = dateState.value
+                            }
 
-                            showAvailablePlaces.value=true
+                            reservationVM.insertReservation(reservation)
                         }else{
+                            val missing = mutableListOf<String>()
+                            if (dateState.value.isEmpty()) missing.add("Date")
+                            if (entryTimeState.value.isEmpty()) missing.add("Entry Time")
+                            if (exitTimeState.value.isEmpty()) missing.add("Exit Time")
+                            missingFields.value = "Missing fields: ${missing.joinToString(", ")}"
+
                             Toast
-                                .makeText(context, "Please choose a date", Toast.LENGTH_SHORT)
+                                .makeText(context,  missingFields.value , Toast.LENGTH_SHORT)
                                 .show()
                         }
 
@@ -410,7 +422,16 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
                 ) {
                     Text("Check Available Places")
                 }
+                if (reservationVM.reservationStatus != null) {
+                    var txt =
+                    Text(
+                        text = reservationVM.reservationMessage.value ?: "",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
 
+
+                    )
+                }
                 // Display available places
               if ( showAvailablePlaces.value && dateState.value !="") {
                   Text("Available Places: ${reservationVM.availablePlacesState.value}")
@@ -422,14 +443,16 @@ if(reservationVM.availablePlacesState.value>0) {
 
             // Assuming all required fields are filled
             val reservation = Reservation(
-                placeId = 1,
+                parkId = parking?.id!!,
                 userId = 1,
                 date = formattedDate,
                 entryTime = entryTimeState.value,
                 exitTime = exitTimeState.value,
-                dateString = dateState.value,
-                paymentValidated = true // Payment is already validated
-            )
+
+                 paymentValidated = true // Payment is already validated
+            ).apply {
+                dateString = dateState.value
+            }
             reservationVM.createReservation(reservation)
             // Insert reservation into database
 
@@ -480,14 +503,15 @@ if(reservationVM.availablePlacesState.value>0) {
 
                     ReservationConfirmation(reservation = Reservation(
 
-                        placeId = 1, // Replace with actual place ID
+                        parkId = parking?.id!!,
                         userId = 1, // Replace with actual user ID
                         date = SimpleDateFormat("yyyy-MM-dd").parse(dateState.value),
                         entryTime = entryTimeState.value,
                         exitTime = exitTimeState.value,
-                        dateString = dateState.value,
-                        paymentValidated = true // Payment is already validated
-                    ),reservationId)
+                         paymentValidated = true // Payment is already validated
+                    ).apply {
+                        dateString = dateState.value
+                    },reservationId)
                 }
 
             }
@@ -533,7 +557,7 @@ if(reservationVM.availablePlacesState.value>0) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text("Reservation confirmed!")
-            Text("Place ID: ${reservation.placeId}")
+            Text("Parking ID: ${reservation.parkId}")
             // Display QR code here
         }
     }

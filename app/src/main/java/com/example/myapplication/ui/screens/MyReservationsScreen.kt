@@ -1,3 +1,5 @@
+package com.example.myapplication.ui.screens
+
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -20,7 +22,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.myapplication.ui.screens.ReservationItem
 import com.example.myapplication.ui.theme.Pink40
 import com.example.myapplication.ui.theme.Purple80
 import com.example.myapplication.ui.theme.PurpleGrey40

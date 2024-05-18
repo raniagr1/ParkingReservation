@@ -27,13 +27,50 @@ class ReservationsViewModel(private val repository: ReservationRepository) : Vie
     val reservationCreated: LiveData<Boolean> = _reservationCreated
     val availablePlaces = mutableStateOf<CheckAvailablePlacesResponse?>(null)
     val availablePlacesState=   mutableStateOf(0)
-
+    val reservationStatus= mutableStateOf("")
+    var reservationMessage=  mutableStateOf("")
+    private val _allReservations = MutableStateFlow<List<Reservation>>(emptyList())
+    val allReservations: StateFlow<List<Reservation>> = _allReservations
     //var availablePlaces=0;
     val displayMessage = mutableStateOf(false)
+
+    init {
+        // Initialize allReservations in viewModelScope
+        viewModelScope.launch {
+            _allReservations.value = repository.getAllReservations()
+        }
+    }
     fun createReservation(reservation: Reservation) {
         viewModelScope.launch {
             val response = repository.createReservation(reservation)
             _reservationCreated.value = response.isSuccessful
+        }
+    }
+
+    fun insertReservation(request: Reservation) {
+        viewModelScope.launch {
+            val response = repository.insertReservation(request)
+            if (response.isSuccessful) {
+                reservationStatus.value = response.body()?.status!!
+                reservationMessage.value = response.body()?.message!!
+                if (response.body()?.reservationId != null) {
+                    val reservation = Reservation(
+                        reservationId = response.body()?.reservationId!!,
+                        parkId = request.parkId,
+                        userId = request.userId,
+                        date = request.date,
+                        entryTime = request.entryTime,
+                        exitTime = request.exitTime,
+                        paymentValidated = true // Payment is already validated
+                    ).apply {
+                        dateString = request.dateString
+                    }
+                    repository.addReservation(reservation)
+                }
+            } else {
+                reservationStatus.value = "error"
+                reservationMessage.value = "Failed to create reservation."
+            }
         }
     }
      fun checkAvailablePlaces(request: CheckAvailablePlacesRequest){
@@ -52,6 +89,9 @@ class ReservationsViewModel(private val repository: ReservationRepository) : Vie
             }
         }}
        // return repository
+    }
+    suspend fun getReservationsById(resId: Int): Reservation? {
+        return repository.getReservationById(resId)
     }
   /*  fun checkAvailablePlaces(parkingId: Int , date: String):Int {
         val dateFormatter = SimpleDateFormat("yyyy-MM-dd")

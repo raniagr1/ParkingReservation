@@ -1,13 +1,18 @@
 package com.example.myapplication.data.dao
 
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import com.example.myapplication.data.model.Reservation
+
 //import com.example.myapplication.data.model.Reservation
 
-/*
+
 
     @Dao
     interface ReservationDao {
         @Insert
-        suspend fun insert(reservation: Reservation)
+        suspend fun insertReservation(reservation: Reservation)
 
         @Query("SELECT * FROM reservations")
         fun getAllReservations(): List<Reservation>
@@ -15,9 +20,9 @@ package com.example.myapplication.data.dao
         @Query("SELECT * FROM reservations WHERE userId = :userId")
         fun getUserReservations(userId: Int): List<Reservation>
 
-        @Query("SELECT * FROM reservations WHERE entryTime >= :date")
-        fun getReservationsFromDate(date: Long): List<Reservation>
+        @Query("SELECT * FROM reservations WHERE reservationId = :resId")
+        fun getReservationById(resId: Int): Reservation
+
     }
 
 
-*/

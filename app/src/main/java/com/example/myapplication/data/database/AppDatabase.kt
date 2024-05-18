@@ -48,3 +48,52 @@ abstract class AppDatabase : RoomDatabase() {
     }
 }
 */
+import android.content.Context
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
+import com.example.myapplication.data.dao.ReservationDao
+import com.example.myapplication.data.model.Reservation
+import java.text.SimpleDateFormat
+import java.util.Date
+
+class Converters {
+    private val dateFormat = SimpleDateFormat("dd/MM/yyyy")
+
+    @TypeConverter
+    fun toTimestamp(date: Date?): String? {
+        return date?.let { dateFormat.format(it) }
+    }
+
+    @TypeConverter
+    fun fromTimestamp(dateString: String?): Date {
+        return dateString.let { dateFormat.parse(it) }
+    }
+}
+
+@Database(entities = [ Reservation::class], version = 1)
+@TypeConverters(Converters::class)
+abstract class AppDatabase:RoomDatabase() {
+
+    abstract fun getReservationDao(): ReservationDao
+
+    companion object {
+        private var INSTANCE: AppDatabase? = null
+        fun getInstance(context: Context): AppDatabase {
+            synchronized(this) {
+                var instance = INSTANCE
+                if (instance == null) {
+                    instance =
+                        Room.databaseBuilder(context, AppDatabase::class.java,
+                            "db_projet").build()
+                    INSTANCE = instance
+                }
+
+                return instance
+            }
+        }}
+
+}
+
