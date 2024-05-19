@@ -420,7 +420,7 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
                               },
                     modifier = Modifier.padding(16.dp)
                 ) {
-                    Text("Check Available Places")
+                    Text("Book a place")
                 }
                 if (reservationVM.reservationStatus != null) {
                     var txt =

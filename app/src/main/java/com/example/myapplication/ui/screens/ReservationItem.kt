@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavHostController
+import com.example.myapplication.Destination
 import com.example.myapplication.data.model.Reservation
 
 
@@ -37,7 +38,7 @@ fun ReservationItem(reservation: Reservation, navController: NavHostController) 
             .fillMaxWidth()
             .padding(vertical = 8.dp, horizontal = 16.dp)
             .clickable {
-           //     navController.navigate(Destination.ReservationDetails.createRoute(reservation.reservationId))
+                navController.navigate(Destination.ReservationDetails.createRoute(reservation.reservationId))
             },
         shape = RoundedCornerShape(16.dp)
     ) {

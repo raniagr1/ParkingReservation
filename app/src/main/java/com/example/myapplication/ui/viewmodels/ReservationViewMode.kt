@@ -66,11 +66,14 @@ class ReservationsViewModel(private val repository: ReservationRepository) : Vie
                         dateString = request.dateString
                     }
                     repository.addReservation(reservation)
+
                 }
             } else {
                 reservationStatus.value = "error"
                 reservationMessage.value = "Failed to create reservation."
             }
+            _allReservations.value = repository.getAllReservations()
+
         }
     }
      fun checkAvailablePlaces(request: CheckAvailablePlacesRequest){
