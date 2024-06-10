@@ -14,10 +14,14 @@ data class Reservation(
     val entryTime: String,
     val exitTime: String,
     val paymentValidated: Boolean,
-    val placeNum: Int? = null
+    val placeNum: Int? = null,
 
 ) {
     @Ignore
     var dateString: String = ""
+    @Ignore
+    var imgUrl: String = ""
+    @Ignore
+    var parkName: String = ""
 }
 

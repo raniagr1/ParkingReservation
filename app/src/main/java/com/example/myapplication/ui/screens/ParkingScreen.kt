@@ -51,7 +51,6 @@ fun ParkingScreen(parkingModel: ParkingViewModel,navController: NavHostControlle
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top
     ) {
-        DisplayLoading(parkingModel)
         // Top Row with Welcome message, Back button, and Notifications button
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -90,7 +89,7 @@ fun ParkingScreen(parkingModel: ParkingViewModel,navController: NavHostControlle
                 )
             }
         }
-        Row(
+       /* Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
@@ -117,7 +116,7 @@ fun ParkingScreen(parkingModel: ParkingViewModel,navController: NavHostControlle
                 contentDescription = "Search",
                 modifier = Modifier.size(24.dp)
             )
-        }
+        }*/
         // Title
         Text(
             text = "Parkings List",
@@ -125,6 +124,7 @@ fun ParkingScreen(parkingModel: ParkingViewModel,navController: NavHostControlle
             color = Color(0xFF0087de),
             modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
         )
+        DisplayLoading(parkingModel)
 
         LazyColumn {
             items(parkingModel.data.value) { parking ->

@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -65,10 +66,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -103,9 +108,7 @@ fun convertStringToDate(dateString: String): Date {
 
 }
 
-fun main() {
-  println(convertStringToDate("2024-05-05"))
-}
+
 
 @SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -132,7 +135,7 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
         val exitTimePickerState = rememberTimePickerState()
         var parking by remember { mutableStateOf<Parking?>(null) }
         val missingFields = remember { mutableStateOf("") }
-
+        val context = LocalContext.current
         // val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy-MM-dd") }
 
         LaunchedEffect(key1 = parkingId) {
@@ -143,29 +146,18 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
 
 
         parking = parkingViewModel?._parking?.value
-        val context = LocalContext.current
-        /*  LaunchedEffect(paymentValidatedState.value) {
-              if (paymentValidatedState.value) {
-                  val reservation = Reservation(
-                      placeId = 1, // Replace with actual place ID
-                      userId = 1, // Replace with actual user ID
-                      date = SimpleDateFormat("yyyy-MM-dd").parse(dateState.value),
-                      entryTime = entryTimeState.value,
-                      exitTime = exitTimeState.value,
-                      paymentValidated = true // Payment is already validated
-                  )
-                  // Insert reservation into database
-                  viewModel.insert(reservation)
-              }
-          }*/
+
+
+
         Column(
             modifier = Modifier
                 .padding(16.dp)
-            ,
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Top
         ) {
-            Text(text = "Make Reservation for", color = Color(0xFFADD8E6), fontSize = 22.sp)
+            Text(text = "Make Reservation for", color = Color(0xFFADD8E6), fontSize = 22.sp, fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(vertical = 16.dp))
             Column(
 
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -174,16 +166,13 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
-                    ,
-
-                    shape = RoundedCornerShape(16.dp)
+                        .padding(16.dp),
+                    shape = RoundedCornerShape(16.dp),
+                  //  elevation =
                 ) {
                     Column(
-                        modifier = Modifier
-                            .padding(16.dp)
-                        ,
-                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.Start,
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(text = "Park name: ${parking?.name}")
@@ -398,7 +387,9 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
                 if (dateState.value.isNotEmpty() && entryTimeState.value.isNotEmpty() && exitTimeState.value.isNotEmpty()) {
                     Button(
                         onClick = {
-                            paymentValidatedState.value = true // Set payment validated state to true
+                            if (isValidReservationTime(entryTimeState.value, exitTimeState.value)) {
+
+                                paymentValidatedState.value = true // Set payment validated state to true
                             val formattedDate = convertStringToDate(dateState.value)
 
                             // Assuming all required fields are filled
@@ -409,6 +400,7 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
                                 entryTime = entryTimeState.value,
                                 exitTime = exitTimeState.value,
                                 paymentValidated = true // Payment is already validated
+
                             ).apply {
                                 dateString = dateState.value
                             }
@@ -417,7 +409,10 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
                           reservationVM.insertReservation(reservation)
                             placeNum.value= reservationVM.placeNum.value
                           reservationId.value =  reservationVM.reservationNum.value
+                            }
+
                         },
+
                         modifier = Modifier.fillMaxWidth(0.8f).height(55.dp),
                         shape = RoundedCornerShape(24.dp),
                         colors = ButtonDefaults.buttonColors(
@@ -436,14 +431,18 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
 
                     AlertDialog(
                         onDismissRequest = { /* Do nothing */ },
-                        title = { Text(text = "Reservation Confirmation") },
+
                         text = {
                             Column {
-                                Text("Reservation Number: ${reservationId.value}")
+                                reservationId.value?.let {
+                                    ParkingConfirmationScreen(parking!!.name?:"",it,placeNum.value?:1,
+                                        entryTimeState.value,exitTimeState.value)
+                                }
+                                /*Text("Reservation Number: ${reservationId.value}")
                                 Text("Place Number: ${placeNum.value}")
                                 Text("Parking Place: ${parking?.name}")
                                 QrCodePreview(data = "Reservation Number: ${reservationId.value}, Place Number: ${placeNum.value}")
-
+*/
                             }
                         },
                         confirmButton = {
@@ -492,26 +491,28 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
         }}
 
 
-    private fun calculateReservationPrice(entryTime: String, exitTime: String,Price:Double): Double {
-        if (entryTime.length>0 && exitTime.length>0) {
-            val entryHour = entryTime.split(":")[0].toDouble()
-            val exitHour = exitTime.split(":")[0].toDouble()
-            val entryMinute = entryTime.split(":")[1].toDouble()
-            val exitMinute = exitTime.split(":")[1].toDouble()
-            var hours = exitHour - entryHour
-            if (hours < 0) {
-                hours = 1.0;
-            }
-            if (entryMinute > exitMinute) {
-                hours -= 1;
-            }
-            return Price * hours
-        }else{
-            return  0.0;
-        }
-
+private fun calculateReservationPrice(entryTime: String, exitTime: String, pricePerHour: Double): Double {
+    if (entryTime.isNotEmpty() && exitTime.isNotEmpty()) {
+        val entryParts = entryTime.split(":").map { it.toDouble() }
+        val exitParts = exitTime.split(":").map { it.toDouble() }
+        val entryHour = entryParts[0] + entryParts[1] / 60
+        val exitHour = exitParts[0] + exitParts[1] / 60
+        var hours = exitHour - entryHour
+        if (hours < 0) hours = 1.0 // Ensure at least 1 hour if negative (overnight stay)
+        return pricePerHour * hours
     }
-
+    return 0.0
+}
+private fun isValidReservationTime(entryTime: String, exitTime: String): Boolean {
+    if (entryTime.isNotEmpty() && exitTime.isNotEmpty()) {
+        val entryParts = entryTime.split(":").map { it.toInt() }
+        val exitParts = exitTime.split(":").map { it.toInt() }
+        val entryTotalMinutes = entryParts[0] * 60 + entryParts[1]
+        val exitTotalMinutes = exitParts[0] * 60 + exitParts[1]
+        return exitTotalMinutes > entryTotalMinutes
+    }
+    return false
+}
 
 
 
@@ -587,3 +588,148 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
             }
         }
     }
+
+@Composable
+fun ParkingConfirmationScreen(parkingName:String,reservationNum:Int,placeNum:Int,entryTime: String,exitTime: String) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+       ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+        ) {
+            // Parking Icon
+            Image(
+                painter = painterResource(id = R.drawable.car2), // Replace with actual icon
+                contentDescription = "Parking Icon",
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFF00BFA5)), // Assuming it's a teal background
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // "You booked it!" Text
+            Text(
+                text = "You booked it!",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Parking Slot and QR Code
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Parking Name",
+
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.Gray
+
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = parkingName,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
+
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                QrCodePreview("Reservation number: ")
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Reservation number",
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.Gray
+
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = reservationNum.toString(),
+
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
+
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Vehicle Info
+            Text(
+                text = "Place number",
+
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.Gray
+
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = placeNum.toString(),
+
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Enter and Exit Time
+            Column(
+                horizontalAlignment = Alignment.Start,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Enter After",
+
+                            color = Color.Gray
+
+                    )
+                    Text(
+                        text = "Exit Before",
+
+                            color = Color.Gray
+
+                    )
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = entryTime,
+
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
+                        ,
+                        textAlign = TextAlign.Start
+                    )
+                    Text(
+                        text = exitTime,
+
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
+                        ,
+                        textAlign = TextAlign.End
+                    )
+                }
+            }
+
+
+
+        }
+    }
+}

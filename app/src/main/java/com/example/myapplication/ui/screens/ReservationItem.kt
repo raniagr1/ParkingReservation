@@ -54,12 +54,12 @@ fun ReservationItem(reservation: Reservation, navController: NavHostController) 
             modifier = Modifier.padding(8.dp)
 
         ) {
-           /* AsyncImage(
-                model = URL +parking.image
+            AsyncImage(
+                model = reservation.imgUrl
                 ,
 
                 // placeholder = painterResource(id = R.drawable.parking3),
-                error = painterResource(id = R.drawable.parking3),
+                error = painterResource(id = R.drawable.car2),
                 contentDescription = null,
                 modifier = Modifier
                     .size(80.dp)
@@ -67,7 +67,7 @@ fun ReservationItem(reservation: Reservation, navController: NavHostController) 
                 contentScale = ContentScale.Crop
             )   // Parking Image
 
-*/
+
             Spacer(modifier = Modifier.width(16.dp))
 
             // Parking Information
@@ -79,7 +79,7 @@ fun ReservationItem(reservation: Reservation, navController: NavHostController) 
                 )
 
                 Text(
-                    text = "Parking: ${reservation.reservationId}",
+                    text = "Parking: ${reservation.parkName}",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, color = Color.White),
                     modifier = Modifier.padding(bottom = 4.dp)
                 )

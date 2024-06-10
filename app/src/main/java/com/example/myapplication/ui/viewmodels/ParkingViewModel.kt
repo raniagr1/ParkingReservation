@@ -18,6 +18,7 @@ class ParkingViewModel(private val parkingRepository: parkingRepository): ViewMo
     val data = mutableStateOf(listOf<Parking>())
     val loading = mutableStateOf(false)
     val displayMessage = mutableStateOf(false)
+    val displayedMessage = mutableStateOf("You are offline")
     val _parking = mutableStateOf<Parking?>(null)
    // val _parking = MutableLiveData<Parking>()
    // val parking: LiveData<Parking> = _parking
@@ -34,6 +35,8 @@ class ParkingViewModel(private val parkingRepository: parkingRepository): ViewMo
                     } else {
                         displayMessage.value = true
                     }
+                }else{
+                    displayMessage.value = true 
                 }
             }
         }
