@@ -12,4 +12,6 @@ sealed class Destination(val route:String) {
     object  MyReservations:Destination("MyReservations")
     object  Login:Destination("LoginPage")
     object  SignUpPage:Destination("SignUpPage")
+
+    object  MapPage:Destination("MapPage")
 }

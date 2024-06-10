@@ -1,5 +1,5 @@
 package com.example.myapplication.ui.screens
-/*
+
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -79,4 +79,4 @@ fun HomePage(navController: NavHostController){
 
 
     }
-}*/
+}

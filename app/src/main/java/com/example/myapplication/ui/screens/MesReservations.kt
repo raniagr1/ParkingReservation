@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.screens
 
+import android.graphics.Color.RED
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,6 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.myapplication.Destination
+import com.example.myapplication.MainActivity
 //import com.example.myapplication.data.model.Reservation
 import com.example.myapplication.ui.viewmodels.UserViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -41,12 +43,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun MyReservationsScreen(userViewModel: UserViewModel,navController: NavHostController
+fun MyReservationsScreen(userViewModel: UserViewModel,navController: NavHostController,isSignedIn: Boolean,onLogout: () -> Unit // Define a lambda parameter for logout actio
 ) {
 // Access isLoggedIn state from UserViewModel
     val isLoggedIn by userViewModel.isLoggedIn.collectAsState()
 
-    if (isLoggedIn) {
+    if (isLoggedIn ) {
         val dateState = remember { mutableStateOf("") }
 
         Column(
@@ -80,16 +82,14 @@ fun MyReservationsScreen(userViewModel: UserViewModel,navController: NavHostCont
                 )
                 // Notification button
                 CustomButton(
-                    onClick = {
-
-                        userViewModel.logout()
-                        // Perform any additional actions after logout if needed
-                    },
+                    onClick = {onLogout
+                        navController.navigate(Destination.MyReservations.route)}, // Use the provided lambda for logout action
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(40.dp),
-                    backgroundColor = Color(0xFF27CEEB),
+                    backgroundColor = Color(RED),
                     contentColor = Color.White
+
                 ) {
                     Text("Logout", color = Color.White)
                 }
@@ -116,7 +116,7 @@ fun MyReservationsScreen(userViewModel: UserViewModel,navController: NavHostCont
     }else {
         // User is not logged in, show login screen
         // You can replace this with your actual login screen composable
-        LoginPage(navController, userViewModel)
+        LoginPage(navController, userViewModel,isSignedIn)
     }
 }
 

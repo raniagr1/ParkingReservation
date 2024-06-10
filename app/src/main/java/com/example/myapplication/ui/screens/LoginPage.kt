@@ -1,5 +1,10 @@
 package com.example.myapplication.ui.screens
 
+import android.app.Activity
+import android.content.ContentValues.TAG
+import android.content.Context
+import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -38,11 +43,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch // Add this import
 import kotlinx.coroutines.withContext
 import androidx.compose.runtime.collectAsState
+import com.example.myapplication.RC_SIGN_IN
 import com.example.myapplication.data.model.LoginRequest
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 
 
 @Composable
-fun LoginPage(navController: NavHostController,userViewModel: UserViewModel) {
+fun LoginPage(navController: NavHostController,userViewModel: UserViewModel,isSignedIn: Boolean) {
     myapplicationTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             // Use Box to overlay the background image and the login screen content
@@ -56,7 +67,7 @@ fun LoginPage(navController: NavHostController,userViewModel: UserViewModel) {
                 )
 
                 // Login Screen Content
-                LoginScreen(navController, userViewModel)
+                LoginScreen(navController, userViewModel, isSignedIn)
             }
 
         }
@@ -65,12 +76,39 @@ fun LoginPage(navController: NavHostController,userViewModel: UserViewModel) {
 }
 
 @Composable
-fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel) {
+fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel,isSignedIn:Boolean) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val Black = Color(0xFF000000)
     val White = Color(0xFFFFFFFF) // Define white color
     val context = LocalContext.current
+
+
+
+//    LaunchedEffect(isSignedIn) {
+//        if (isSignedIn) {
+//            userViewModel.loggedin()
+//            navController.navigate(Destination.MyReservations.route)
+//        }
+//    }
+    // Inside LoginScreen composable function
+
+    // Handle Google Sign-In button click
+    val onGoogleSignInClick: () -> Unit = {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(context.getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        val googleSignInClient = GoogleSignIn.getClient(context, gso)
+        val signInIntent = googleSignInClient.signInIntent
+        (context as Activity).startActivityForResult(signInIntent, RC_SIGN_IN)
+    }
+
+    // ... (other composable content)
+
+
+
+
     // Collect login result as state
     val loginResultState = userViewModel.loginResult.collectAsState()
 
@@ -199,7 +237,7 @@ fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel) 
                         contentDescription = null,
                         modifier = Modifier
                             .size(48.dp)
-                            .clickable { /* Handle Google icon click */ }
+                            .clickable(onClick = onGoogleSignInClick)
                     )
                     Spacer(modifier = Modifier.width(42.dp)) // Added spacing between icons
                     // Twitter Icon
@@ -241,3 +279,26 @@ fun CustomButton(
     }
 }
 
+//// Add this function to the same Kotlin file where you have your composable functions
+//fun firebaseAuthWithGoogle(account: GoogleSignInAccount, context: Context,onSignInResult: (Boolean) -> Unit) {
+//    val auth = FirebaseAuth.getInstance()
+//    Log.d(TAG, "firebaseAuthWithGoogle:" + account.id!!)
+//    val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+//    auth.signInWithCredential(credential)
+//        .addOnCompleteListener(context as Activity) { task ->
+//            if (task.isSuccessful) {
+//
+//                // Sign in success, update UI with the signed-in user's information
+//                Log.d(TAG, "signInWithCredential:success")
+//                val user = auth.currentUser
+//
+//                // Update UI or perform any necessary action upon successful sign-in
+//                onSignInResult(true) // Assuming LoginPage holds the state
+//            } else {
+//                // If sign in fails, display a message to the user.
+//                Log.w(TAG, "signInWithCredential:failure", task.exception)
+//                // Update UI or perform any necessary action upon sign-in failure
+//                onSignInResult(false)
+//            }
+//        }
+//}
