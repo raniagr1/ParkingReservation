@@ -297,7 +297,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable(Destination.MapPage.route) {
-                            MapPage()
+                            MapPage(pModel)
                         }
 
 

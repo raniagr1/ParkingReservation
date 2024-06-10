@@ -58,6 +58,8 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.example.myapplication.data.model.Parking
+import com.example.myapplication.ui.viewmodels.ParkingViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -65,36 +67,67 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
-@Composable
-fun MapPage() {
-    val context = LocalContext.current
-    val mapView = rememberMapViewWithLifecycle()
 
-    AndroidView({ mapView }) { mapView ->
-        mapView.getMapAsync { googleMap ->
-            // Customize your map
-            val sydney = LatLng(-34.0, 151.0)
-            googleMap.addMarker(
-                MarkerOptions().position(sydney).title("Marker in Sydney")
-            )
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+// Modify the displayParkingLocations function to accept a list of parking locations
+//private fun displayParkingLocations(googleMap: GoogleMap, parkingLocations: List<LatLng>,parkingLocations: List<Parking>) {
+//    for (location in parkingLocations) {
+//        googleMap.addMarker(
+//            MarkerOptions().position(location).title("Parking Spot")
+//        )
+//    }
+//}
+private fun displayParkingLocations(googleMap: GoogleMap, parkingLocations: List<Parking>) {
+    googleMap.clear()
+    for (parking in parkingLocations) {
+        val location = LatLng(parking.latitude, parking.longitude)
 
-            // Fetch and display parking locations here
-            displayParkingLocations(googleMap, context)
+        // Create a Marker with a custom info window
+        val marker = googleMap.addMarker(MarkerOptions()
+            .position(location)
+            .title(parking.name))
+
+        // Set a custom info window for the marker
+        if (marker != null) {
+            marker.snippet = createParkingInfoWindow(parking)
         }
+        if (marker != null) {
+            marker.showInfoWindow()
+        } // Optionally show info window immediately
     }
 }
 
-private fun displayParkingLocations(googleMap: GoogleMap, context: Context) {
-    // Example: Add parking markers
-    val parkingLocations = listOf(
-        LatLng(-34.1, 151.1),
-        LatLng(-34.2, 151.2)
-    )
-    for (location in parkingLocations) {
-        googleMap.addMarker(
-            MarkerOptions().position(location).title("Parking Spot")
-        )
+// This function creates the content for the info window
+private fun createParkingInfoWindow(parking: Parking): String {
+    val infoWindowText = StringBuilder()
+
+
+    // Add additional details from Parking object
+
+    infoWindowText.append("Capacity: ${parking.capacity} cars | ")
+    infoWindowText.append("Price per hour: €${String.format("%.2f", parking.pricePerHour)}")
+
+
+    // You can add more details like address (commune), rating, etc.
+
+    return infoWindowText.toString()
+}
+@Composable
+fun MapPage(viewModel: ParkingViewModel) {
+    val context = LocalContext.current
+    val mapView = rememberMapViewWithLifecycle()
+    val parkings = viewModel.data.value
+    val parkingLocations = viewModel.data.value.map { parking ->
+        LatLng(parking.latitude, parking.longitude)
+    }
+    AndroidView({ mapView }) { mapView ->
+        mapView.getMapAsync { googleMap ->
+            // Customize your map
+            val newYork = LatLng(40.7128, -74.0060)
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newYork, 10f))
+
+            // Display parking locations on the map
+            displayParkingLocations(googleMap,parkings)
+        }
     }
 }
 

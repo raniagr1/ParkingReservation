@@ -83,7 +83,8 @@ fun MyReservationsScreen(userViewModel: UserViewModel,navController: NavHostCont
                 // Notification button
                 CustomButton(
                     onClick = {onLogout
-                        navController.navigate(Destination.MyReservations.route)}, // Use the provided lambda for logout action
+                        userViewModel.logout()
+                        navController.navigate(Destination.Login.route)}, // Use the provided lambda for logout action
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(40.dp),

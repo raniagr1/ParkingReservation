@@ -85,12 +85,12 @@ fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel,i
 
 
 
-//    LaunchedEffect(isSignedIn) {
-//        if (isSignedIn) {
-//            userViewModel.loggedin()
-//            navController.navigate(Destination.MyReservations.route)
-//        }
-//    }
+    LaunchedEffect(isSignedIn) {
+        if (isSignedIn) {
+            userViewModel.loggedin()
+            navController.navigate(Destination.MyReservations.route)
+        }
+    }
     // Inside LoginScreen composable function
 
     // Handle Google Sign-In button click
@@ -116,10 +116,10 @@ fun LoginScreen(navController: NavHostController, userViewModel: UserViewModel,i
     val loginResult = loginResultState.value
 
     // Handle login button click
-    val onLoginClick: () -> Unit = {
-        val loginRequest = LoginRequest(username, password)
-        userViewModel.checkUserExistence(loginRequest)
-    }
+//    val onLoginClick: () -> Unit = {
+//        val loginRequest = LoginRequest(username, password)
+//        userViewModel.checkUserExistence(loginRequest)
+//    }
 
 
     Box(
