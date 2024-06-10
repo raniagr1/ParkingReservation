@@ -66,7 +66,7 @@ fun DisplayDetail(parkingId: Int, parkingViewModel: ParkingViewModel?, navContro
                 modifier = Modifier
                     .fillMaxHeight()
                     .clip(RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp))
-                    .background(Color(0xFFCCCCCC))
+                    .background(Color(0xFFc3ebfe))
                     .padding(24.dp)
             )
             {
@@ -79,11 +79,12 @@ fun DisplayDetail(parkingId: Int, parkingViewModel: ParkingViewModel?, navContro
                     Text(
                         text = park.name,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 24.sp
+                        fontSize = 24.sp,
+                        color= Color(0xFF578dfd)
                     )
                     Text(
                         text = park.rating.toString(),
-                        color = Color.DarkGray,
+                        color = Color(0xFF578dfd),
                         fontSize = 14.sp
                     )
                 }
@@ -123,7 +124,7 @@ fun DisplayDetail(parkingId: Int, parkingViewModel: ParkingViewModel?, navContro
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFADD8E6)
+                        containerColor = Color(0xFF578dfd)
                     ),
                     onClick = { navController.navigate(Destination.Reservation.createRoute(park.id))
                     }) {

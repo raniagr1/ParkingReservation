@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.CheckAvailablePlacesRequest
 import com.example.myapplication.data.model.Reservation
@@ -38,6 +38,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -57,6 +58,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -74,6 +76,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.example.myapplication.Destination
 import com.example.myapplication.data.model.Parking
 import com.example.myapplication.ui.theme.Pink40
 import com.example.myapplication.ui.theme.Purple80
@@ -107,14 +110,17 @@ fun main() {
 @SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel, parkingViewModel: ParkingViewModel?)
+fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel, parkingViewModel: ParkingViewModel?,navController: NavHostController)
     {
-        var reservationId:Long=0;
+        val reservationId = remember { mutableStateOf<Int?>(0) }
         // State for form inputs
         val dateState = remember { mutableStateOf("") }
         val entryTimeState = remember { mutableStateOf("") }
         val exitTimeState = remember { mutableStateOf("") }
         val ConfirmationState = remember { mutableStateOf(false) }
+        val placeNum = remember { mutableStateOf<Int?>(0) }
+
+
         val paymentValidatedState = remember { mutableStateOf(false) }
         var showDatePicker by remember { mutableStateOf(false) }
         var showEntryTimePicker by remember { mutableStateOf(false) }
@@ -219,7 +225,6 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
                 }
                 Spacer(modifier = Modifier.height(4.dp))//
                 Text(text = "Selected Date: ${dateState.value}") // Display selected date
-             if(dateState.value !=""){Text(text = "Selected Date: ${convertStringToDate(dateState.value)}")}
            //     Text(text = "Selected Date: ${SimpleDateFormat("yyyy-MM-dd").parse(dateState.value)}") // Display selected date
                 Spacer(modifier = Modifier.height(4.dp))
                 // Input for entry time
@@ -384,12 +389,80 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
                         )
                     }
                 }
-                val calculatedPrice = calculateReservationPrice(entryTimeState.value,exitTimeState.value,15.0)
+                val calculatedPrice = parking?.let {
+                    calculateReservationPrice(entryTimeState.value,exitTimeState.value,
+                        it.pricePerHour)
+                }
                 Spacer(modifier = Modifier.height(7.dp))
                 Text(text ="The total for park ${parking!!.id} price is ${calculatedPrice} DA" , color = Color(0xFFADD8E6))
-                Button(
+                if (dateState.value.isNotEmpty() && entryTimeState.value.isNotEmpty() && exitTimeState.value.isNotEmpty()) {
+                    Button(
+                        onClick = {
+                            paymentValidatedState.value = true // Set payment validated state to true
+                            val formattedDate = convertStringToDate(dateState.value)
+
+                            // Assuming all required fields are filled
+                            val reservation = Reservation(
+                                parkId = parking?.id!!,
+                                userId = 1,
+                                date = formattedDate,
+                                entryTime = entryTimeState.value,
+                                exitTime = exitTimeState.value,
+                                paymentValidated = true // Payment is already validated
+                            ).apply {
+                                dateString = dateState.value
+                            }
+                         //   val reservationsState =reservationVM.reservationNum.collectAsState()
+
+                          reservationVM.insertReservation(reservation)
+                            placeNum.value= reservationVM.placeNum.value
+                          reservationId.value =  reservationVM.reservationNum.value
+                        },
+                        modifier = Modifier.fillMaxWidth(0.8f).height(55.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFADD8E6)
+                        ),
+                    ) {
+                        Text(text = "Validate Payment", fontSize = 18.sp)
+                    }
+                }
+                if (paymentValidatedState.value) {
+                    Toast.makeText(
+                        context,
+                        "Reservation Number: ${reservationId.value} and Place Number: ${placeNum.value} ",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    AlertDialog(
+                        onDismissRequest = { /* Do nothing */ },
+                        title = { Text(text = "Reservation Confirmation") },
+                        text = {
+                            Column {
+                                Text("Reservation Number: ${reservationId.value}")
+                                Text("Place Number: ${placeNum.value}")
+                                Text("Parking Place: ${parking?.name}")
+                                QrCodePreview(data = "Reservation Number: ${reservationId.value}, Place Number: ${placeNum.value}")
+
+                            }
+                        },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    navController.navigate(Destination.List.route)
+                                }
+                            ) {
+                                Text("OK")
+                            }
+                        }
+                    )
+                }
+
+
+           /*     Button(
                     onClick = {
-                        if (( dateState.value !="")&&( entryTimeState.value !="")&&( exitTimeState.value !="")) {
+                        paymentValidatedState.value = false // Reset payment validated state
+
                             val formattedDate = convertStringToDate(dateState.value)
 
                             // Assuming all required fields are filled
@@ -405,121 +478,22 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
                             }
 
                             reservationVM.insertReservation(reservation)
-                        }else{
-                            val missing = mutableListOf<String>()
-                            if (dateState.value.isEmpty()) missing.add("Date")
-                            if (entryTimeState.value.isEmpty()) missing.add("Entry Time")
-                            if (exitTimeState.value.isEmpty()) missing.add("Exit Time")
-                            missingFields.value = "Missing fields: ${missing.joinToString(", ")}"
 
-                            Toast
-                                .makeText(context,  missingFields.value , Toast.LENGTH_SHORT)
-                                .show()
-                        }
 
                               },
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text("Book a place")
-                }
-                if (reservationVM.reservationStatus != null) {
-                    var txt =
-                    Text(
-                        text = reservationVM.reservationMessage.value ?: "",
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
+                }*/
 
 
-                    )
-                }
-                // Display available places
-              if ( showAvailablePlaces.value && dateState.value !="") {
-                  Text("Available Places: ${reservationVM.availablePlacesState.value}")
-              }
-if(reservationVM.availablePlacesState.value>0) {
-    Button(
-        onClick = {
-            val formattedDate = convertStringToDate(dateState.value)
-
-            // Assuming all required fields are filled
-            val reservation = Reservation(
-                parkId = parking?.id!!,
-                userId = 1,
-                date = formattedDate,
-                entryTime = entryTimeState.value,
-                exitTime = exitTimeState.value,
-
-                 paymentValidated = true // Payment is already validated
-            ).apply {
-                dateString = dateState.value
-            }
-            reservationVM.createReservation(reservation)
-            // Insert reservation into database
-
-            /*rese.viewModelScope.launch {
-                /*  val user = User(
-                      firstName = "John",
-                      lastName = "Doe",
-                      userName = "johndoe",
-                      passwrd = "password"
-                  )
-
-                  val parking = OParking(
-                      name = "Example Parking",
-                      commune = "Example Commune",
-                      imageResId = R.drawable.car2,
-                      capacity = 100,
-                      pricePerHour = 10.0,
-                      description = "Example Description",
-                      rating = 4.5f,
-                      longitude = 0.0f,
-                      latitude = 0.0f
-                  )
-
-                  val place = Place(
-                      number = 1,
-                      floorId = 1 // Assuming you have a floor with id 1
-                  )
-
-                  val floor = Floor(
-                      number = 1,
-                      parkingId = 1, // Assuming you have a parking with id 1
-                      nbPlaces = 50
-                  )*/
-
-
-                reservationId = viewModel.insert(reservation)
-                // After inserting into database, set paymentValidatedState to true
-                paymentValidatedState.value = true
-            }*/
-
-        },
-        modifier = Modifier.padding(16.dp)
-    ) {
-        Text("Validate Payment")
-    }
-}
-                if (paymentValidatedState.value) {
-
-                    ReservationConfirmation(reservation = Reservation(
-
-                        parkId = parking?.id!!,
-                        userId = 1, // Replace with actual user ID
-                        date = SimpleDateFormat("yyyy-MM-dd").parse(dateState.value),
-                        entryTime = entryTimeState.value,
-                        exitTime = exitTimeState.value,
-                         paymentValidated = true // Payment is already validated
-                    ).apply {
-                        dateString = dateState.value
-                    },reservationId)
-                }
 
             }
         }}
 
 
     private fun calculateReservationPrice(entryTime: String, exitTime: String,Price:Double): Double {
-        if (entryTime.length>0 && entryTime.length>0) {
+        if (entryTime.length>0 && exitTime.length>0) {
             val entryHour = entryTime.split(":")[0].toDouble()
             val exitHour = exitTime.split(":")[0].toDouble()
             val entryMinute = entryTime.split(":")[1].toDouble()
@@ -613,44 +587,3 @@ if(reservationVM.availablePlacesState.value>0) {
             }
         }
     }
-
-/*    @Composable
-    fun ReservationConfirmationScreen(navController: NavHostController, reservationId: Int,viewModel: ReservationsViewModel) {
-        // Fetch reservation details based on reservationId
-        var reservation by remember {
-            mutableStateOf<Reservation?>(null)
-        }
-
-        LaunchedEffect(Unit) {
-            viewModel?.let { viewModel ->
-                var result = viewModel.getReservationsById(reservationId)
-                reservation = result
-            }
-        }
-
-
-
-        // Show confirmation details
-        reservation?.let { ReservationConfirmation(reservation = it, reservation!!.reservationId.toLong()) }
-
-        // Show QR code
-        val qrCodeData = "Reservation ID: $reservationId"
-        /* val qrCodePainter = generateQRCode(qrCodeData)
-         Image(
-             painter = qrCodePainter,
-             contentDescription = "QR Code",
-             modifier = Modifier
-                 .fillMaxSize()
-                 .padding(16.dp)
-         )
-     */
-        // Example of navigating back to the previous screen
-        Button(
-            onClick = {
-                navController.popBackStack()
-            },
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text("Back")
-        }
-    }*/

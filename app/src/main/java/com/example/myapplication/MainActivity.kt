@@ -3,6 +3,10 @@ package com.example.myapplication
 import ParkingScreen
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -52,6 +56,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.myapplication.ui.FirebaseMessagingScreen
 import com.example.myapplication.ui.screens.DisplayDetail
 import com.example.myapplication.ui.screens.Displayparkings
 import com.example.myapplication.ui.screens.MyReservationsScreen
@@ -60,76 +65,141 @@ import com.example.myapplication.ui.screens.ReservationDetails
 import com.example.myapplication.ui.theme.myapplicationTheme
 import com.example.myapplication.ui.viewmodels.ParkingViewModel
 import com.example.myapplication.ui.viewmodels.ReservationsViewModel
+import com.example.myapplication.ui.viewmodels.TokenViewModel
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
+
 
 class MainActivity : ComponentActivity() {
-    private val pModel : ParkingViewModel by viewModels {
+
+    private val pModel: ParkingViewModel by viewModels {
         ParkingViewModel.Factory((application as MyApplication).parkingRepository)
     }
-    private val rModel : ReservationsViewModel by viewModels {
+    private val rModel: ReservationsViewModel by viewModels {
         ReservationsViewModel.Factory((application as MyApplication).reservationRepository)
+    }
+    private val tokenViewModel: TokenViewModel by viewModels {
+        TokenViewModel.Factory((application as MyApplication).tokenRepository)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            val parkingListTab = TabBarItem(title = "Parking List", selectedIcon = Icons.Filled.List, unselectedIcon = Icons.Outlined.List, badgeAmount = 7, destination =Destination.List.route )
-            val mapTab = TabBarItem(title = "Map", selectedIcon = Icons.Filled.LocationOn, unselectedIcon = Icons.Outlined.LocationOn, destination =Destination.MyReservations.route)
-            val myReservationsTab = TabBarItem(title = "my Reservations", selectedIcon = Icons.Filled.DateRange, unselectedIcon = Icons.Outlined.DateRange, destination =Destination.MyReservations.route )
 
-            // creating a list of all the tabs
-            val tabBarItems = listOf( parkingListTab, mapTab, myReservationsTab)
+        // Fetch the FCM token and send it to the server
+        fetchAndSendFCMToken()
+
+        setContent {
+            val parkingListTab = TabBarItem(
+                title = "Parking List",
+                selectedIcon = Icons.Filled.List,
+                unselectedIcon = Icons.Outlined.List,
+                badgeAmount = 7,
+                destination = Destination.List.route
+            )
+            val mapTab = TabBarItem(
+                title = "Map",
+                selectedIcon = Icons.Filled.LocationOn,
+                unselectedIcon = Icons.Outlined.LocationOn,
+                destination = Destination.MyReservations.route
+            )
+            val myReservationsTab = TabBarItem(
+                title = "my Reservations",
+                selectedIcon = Icons.Filled.DateRange,
+                unselectedIcon = Icons.Outlined.DateRange,
+                destination = Destination.MyReservations.route
+            )
+
+            val tabBarItems = listOf(parkingListTab, mapTab, myReservationsTab)
 
             myapplicationTheme {
-
-                // A surface container using the 'background' color from the theme
+                FirebaseMessagingScreen()
                 Surface(
-                    modifier = Modifier.fillMaxSize() ,
-                    color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize(),
+                    color = Color.White
                 ) {
                     val navController = rememberNavController()
-                   /* var i = remember { mutableStateOf(0) }
-                    val onClick = { i.value+=1 }
-                    Count(i.value,onClick)*/
+                    handleDeepLinks(navController) // Handle the intent when the app is opened via the notification
+
                     TopPart()
-                    NavigationExample(navController = rememberNavController(),pModel,rModel,tabBarItems)
+                    NavigationExample(navController, pModel, rModel, tabBarItems)
+                    pModel.getAllparkings()
+                }
+            }
+        }
 
-                   // Displayparkings(pModel, navController)
-                            pModel.getAllparkings()
+    }
+    private fun handleDeepLinks(navController: NavHostController) {
+        // Postpone handling to ensure the navigation components are ready
+        val handler = Handler(Looper.getMainLooper())
+        handler.post {
+            intent?.data?.let { data ->
+                if (data.scheme == "myapp") {
+                    val reservationId = data.lastPathSegment
+                    Log.d("DeepLink", "Parsed reservationId: $reservationId")
 
+                    if (reservationId != null) {
+                        try {
+                            val reservId = reservationId.toInt()
+                            Log.d("DeepLink", "Navigating to ReservationDetails with ID: $reservId")
+
+                            navController.navigate(Destination.ReservationDetails.createRoute(reservId))
+                        } catch (e: NumberFormatException) {
+                            Log.e("DeepLink", "Invalid reservation ID format: $reservationId")
+                        }
+                    }
                 }
             }
         }
     }
-}
 
+    private fun fetchAndSendFCMToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w("FCM", "Fetching FCM registration token failed", task.exception)
+                return@addOnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+
+            // Log and toast
+            Log.d("FCM", "FCM Token: $token")
+            Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
+
+            // Assume user ID is available; replace with actual user ID as needed
+            val userId = 1
+
+            // Send the token to the server using TokenViewModel
+            tokenViewModel.sendToken(token, userId)
+        }
+    }
+}
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun NavigationExample(navController: NavHostController, parkingViewModel: ParkingViewModel,reservationsViewModel: ReservationsViewModel,tabBarItems :List<TabBarItem>){
+fun NavigationExample(
+    navController: NavHostController,
+    parkingViewModel: ParkingViewModel,
+    reservationsViewModel: ReservationsViewModel,
+    tabBarItems: List<TabBarItem>
+) {
     Scaffold(bottomBar = { TabView(tabBarItems, navController) }) {
         NavHost(navController = navController, startDestination = "ParkingScreen") {
             composable(Destination.List.route) { ParkingScreen(parkingViewModel, navController) }
             composable(Destination.Details.route) {
                 val parkId = it.arguments?.getString("parkId")?.toInt()
-                DisplayDetail(parkId ?: 1, parkingViewModel,navController)
+                DisplayDetail(parkId ?: 1, parkingViewModel, navController)
             }
             composable(Destination.Reservation.route) {
                 val parkId = it.arguments?.getString("parkId")?.toInt()
-                ReservationBookingScreen(parkId ?: 1, reservationsViewModel, parkingViewModel)
+                ReservationBookingScreen(parkId ?: 1, reservationsViewModel, parkingViewModel, navController)
             }
-
             composable(Destination.ReservationDetails.route) {
                 val resId = it.arguments?.getString("resId")?.toInt()
                 ReservationDetails(resId ?: 0, reservationsViewModel)
             }
-             composable(Destination.MyReservations.route) { MyReservationsScreen(reservationsViewModel,navController ) }
+            composable(Destination.MyReservations.route) { MyReservationsScreen(reservationsViewModel, navController) }
         }
     }
-
-         /*   composable(Destination.Reservation.route) { ReservationBookingScreen( ) }
-            composable(Destination.MyReservations.route) { MyReservationsScreen(reservationViewModel )
-             }*/
-
-
 }
 
 @Composable

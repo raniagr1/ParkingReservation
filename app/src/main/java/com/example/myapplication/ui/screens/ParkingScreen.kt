@@ -74,7 +74,7 @@ fun ParkingScreen(parkingModel: ParkingViewModel,navController: NavHostControlle
             Text(
                 text = "Welcome User!",
                 style = MaterialTheme.typography.headlineLarge,
-                color = Color.White, // White color
+                color = Color(0xFF0087de), // White color
                 modifier = Modifier.padding(start = 16.dp, top = 16.dp)
             )
             // Notification button
@@ -122,7 +122,7 @@ fun ParkingScreen(parkingModel: ParkingViewModel,navController: NavHostControlle
         Text(
             text = "Parkings List",
             style = MaterialTheme.typography.titleLarge,
-            color = Color.White, // White color
+            color = Color(0xFF0087de),
             modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
         )
 

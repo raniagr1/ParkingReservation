@@ -33,7 +33,11 @@ class ReservationsViewModel(private val repository: ReservationRepository) : Vie
     val allReservations: StateFlow<List<Reservation>> = _allReservations
     //var availablePlaces=0;
     val displayMessage = mutableStateOf(false)
+    private val _placeNum = MutableLiveData<Int?>()
+    val placeNum: LiveData<Int?> = _placeNum
 
+    private val _reservationNum = MutableLiveData<Int?>()
+    val reservationNum: LiveData<Int?> = _reservationNum
     init {
         // Initialize allReservations in viewModelScope
         viewModelScope.launch {
@@ -48,6 +52,7 @@ class ReservationsViewModel(private val repository: ReservationRepository) : Vie
     }
 
     fun insertReservation(request: Reservation) {
+
         viewModelScope.launch {
             val response = repository.insertReservation(request)
             if (response.isSuccessful) {
@@ -61,12 +66,16 @@ class ReservationsViewModel(private val repository: ReservationRepository) : Vie
                         date = request.date,
                         entryTime = request.entryTime,
                         exitTime = request.exitTime,
-                        paymentValidated = true // Payment is already validated
+                        paymentValidated = true, // Payment is already validated
+                        placeNum=response.body()?.place_num!!
+
                     ).apply {
                         dateString = request.dateString
                     }
-                    repository.addReservation(reservation)
 
+                    repository.addReservation(reservation)
+                    _placeNum.value = response.body()?.place_num
+                    _reservationNum.value = response.body()?.reservationId
                 }
             } else {
                 reservationStatus.value = "error"
@@ -75,6 +84,7 @@ class ReservationsViewModel(private val repository: ReservationRepository) : Vie
             _allReservations.value = repository.getAllReservations()
 
         }
+
     }
      fun checkAvailablePlaces(request: CheckAvailablePlacesRequest){
          viewModelScope.launch {

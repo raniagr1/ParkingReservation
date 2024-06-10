@@ -1,3 +1,3 @@
 package com.example.myapplication
 
-val URL = "https://9d80-41-111-189-173.ngrok-free.app/parkingReserv/"
+val URL = "https://cfa2-105-99-142-128.ngrok-free.app/parkingReserv/"

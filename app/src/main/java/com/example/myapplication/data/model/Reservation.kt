@@ -13,7 +13,9 @@ data class Reservation(
     val date: Date,
     val entryTime: String,
     val exitTime: String,
-    val paymentValidated: Boolean
+    val paymentValidated: Boolean,
+    val placeNum: Int? = null
+
 ) {
     @Ignore
     var dateString: String = ""

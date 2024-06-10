@@ -54,6 +54,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.myapplication.data.dao.ReservationDao
 import com.example.myapplication.data.model.Reservation
 import java.text.SimpleDateFormat
@@ -73,7 +75,7 @@ class Converters {
     }
 }
 
-@Database(entities = [ Reservation::class], version = 1)
+@Database(entities = [ Reservation::class], version = 2)
 @TypeConverters(Converters::class)
 abstract class AppDatabase:RoomDatabase() {
 
@@ -87,13 +89,18 @@ abstract class AppDatabase:RoomDatabase() {
                 if (instance == null) {
                     instance =
                         Room.databaseBuilder(context, AppDatabase::class.java,
-                            "db_projet").build()
+                            "db_projet").addMigrations(MIGRATION_1_2).build()
                     INSTANCE = instance
                 }
 
                 return instance
             }
+        }
+        private val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE reservations ADD COLUMN placeNum INTEGER")
         }}
+    }
 
 }
 

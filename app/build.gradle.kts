@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp") version "1.9.21-1.0.15"
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -83,4 +84,14 @@ dependencies {
     implementation ("androidx.room:room-ktx:$room_version")
     testImplementation ("androidx.room:room-testing:$room_version")
     implementation ("androidx.navigation:navigation-compose:2.6.0")
+    implementation("androidx.compose.material:material-icons-extended:1.4.3")
+    implementation("com.lightspark:compose-qr-code:1.0.1")
+
+    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
+    implementation("com.google.firebase:firebase-analytics:22.0.1")
+    // messaging
+    implementation("com.google.firebase:firebase-messaging-ktx:23.2.1")
+    // notification permission
+    implementation("com.google.accompanist:accompanist-permissions:0.31.1-alpha")
+    implementation("androidx.datastore:datastore-preferences-android:1.1.1")
 }

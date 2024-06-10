@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Star
@@ -52,11 +53,13 @@ fun ParkingListItem(parking: Parking, navController: NavHostController) {
             .clickable {
                 navController.navigate(Destination.Details.createRoute(parking.id))
             },
+
         shape = RoundedCornerShape(16.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(8.dp)
+
         ) {
             AsyncImage(
                 model = URL+parking.image
@@ -86,7 +89,7 @@ fun ParkingListItem(parking: Parking, navController: NavHostController) {
             Column {
                 Text(
                     text = parking.name,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, color = Color.Blue),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, color = Color(0xFF578dfd)),
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -107,7 +110,7 @@ fun ParkingListItem(parking: Parking, navController: NavHostController) {
                     Icon(
                         imageVector = Icons.Default.LocationOn,
                         contentDescription = "Location Icon",
-                        tint = Color.Gray,
+                        tint = Color(0xFF0087de),
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
@@ -116,16 +119,24 @@ fun ParkingListItem(parking: Parking, navController: NavHostController) {
                         modifier = Modifier.padding(start = 4.dp)
                     )
                 }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+
+                Icon(
+                    imageVector = Icons.Default.AttachMoney,
+                    contentDescription = "Money Icon",
+                    tint = Color(0xFF0087de),
+                    modifier = Modifier.size(16.dp)
+                )
                 Text(
                     text = "Price: ${parking.pricePerHour} DA",
                     color = Color.Gray,
                     modifier = Modifier.padding(top = 4.dp)
-                )
+                )}
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Default.Info,
                         contentDescription = "Car Icon",
-                        tint = Color.Gray,
+                        tint = Color(0xFF0087de),
                         modifier = Modifier.size(16.dp)
                     )
                     Text(

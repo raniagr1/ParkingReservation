@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.data.model.Reservation
 import com.example.myapplication.ui.viewmodels.ReservationsViewModel
+import com.lightspark.composeqr.QrCodeView
 import java.text.SimpleDateFormat
 
 @Composable
@@ -37,13 +38,14 @@ fun ReservationDetails(reservationId: Int, reservationViewModel: ReservationsVie
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top
         ) {
-            Text("Reservation ID: ${reservation.reservationId}")
-            Text("Place ID: ${reservation.parkId}")
+            Text("Reservation number: ${reservation.reservationId}")
+            Text("Place number: ${reservation.placeNum}")
             Text("User ID: ${reservation.userId}")
             Text("Date: ${SimpleDateFormat("yyyy-MM-dd").format(reservation.date)}")
             Text("Entry Time: ${reservation.entryTime}")
             Text("Exit Time: ${reservation.exitTime}")
             Text("Payment Validated: ${if (reservation.paymentValidated) "Yes" else "No"}")
+            QrCodePreview("Reservation number: ${reservation.reservationId}")
         }
     }
 }

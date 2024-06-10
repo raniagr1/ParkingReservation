@@ -11,6 +11,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
+import retrofit2.Call
 import java.util.Date
 
 
@@ -29,7 +30,8 @@ interface Endpoint {
     suspend fun createReservation(@Body reservation: Reservation): Response<Reservation>
     @POST("insert_reservation.php")
     suspend fun insertReservation(@Body reservation: Reservation): Response<ReservationResponse>
-
+    @POST("save-token.php")
+    fun saveToken(@Body tokenInfo: TokenInfo): Call<Void>
     companion object {
         @Volatile
         var endpoint: Endpoint? = null
@@ -62,5 +64,8 @@ data class CheckAvailablePlacesResponse(
 data class ReservationResponse(
     val status: String,
     val message: String,
-    val reservationId: Int? = null
+    val reservationId: Int? = null,
+    val place_num: Int? = null
 )
+
+data class TokenInfo(val token: String, val userId: Int)
