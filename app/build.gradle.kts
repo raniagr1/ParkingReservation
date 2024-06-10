@@ -61,6 +61,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -94,4 +95,13 @@ dependencies {
     // notification permission
     implementation("com.google.accompanist:accompanist-permissions:0.31.1-alpha")
     implementation("androidx.datastore:datastore-preferences-android:1.1.1")
+    implementation ("com.google.android.gms:play-services-auth:19.2.0") // Add Google Sign-In dependency
+    implementation ("com.google.firebase:firebase-auth:23.0.0") // Add Firebase Auth dependency
+    implementation ("com.google.maps.android:android-maps-utils:2.2.0")
+    implementation ("com.google.maps.android:maps-compose:2.0.0")
+    // Declare dependency between tasks
+    tasks.matching { it.name.startsWith("merge") && it.name.endsWith("Resources") }.configureEach {
+        dependsOn("processDebugGoogleServices")
+
+    }
 }

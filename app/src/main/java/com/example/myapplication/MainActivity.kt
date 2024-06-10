@@ -61,6 +61,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.ui.FirebaseMessagingScreen
 import com.example.myapplication.ui.screens.DisplayDetail
 import com.example.myapplication.ui.screens.Displayparkings
+import com.example.myapplication.ui.screens.MapPage
 import com.example.myapplication.ui.screens.MyReservationsScreen
 import com.example.myapplication.ui.screens.ReservationBookingScreen
 import com.example.myapplication.ui.screens.ReservationDetails
@@ -101,7 +102,7 @@ class MainActivity : ComponentActivity() {
                 title = "Map",
                 selectedIcon = Icons.Filled.LocationOn,
                 unselectedIcon = Icons.Outlined.LocationOn,
-                destination = Destination.MyReservations.route
+                destination = Destination.MapPage.route
             )
             val myReservationsTab = TabBarItem(
                 title = "my Reservations",
@@ -208,6 +209,9 @@ fun NavigationExample(
                 ReservationDetails(resId ?: 0, reservationsViewModel)
             }
             composable(Destination.MyReservations.route) { MyReservationsScreen(reservationsViewModel, navController) }
+            composable(Destination.MapPage.route) {
+                MapPage(parkingViewModel)
+            }
         }
     }
 }

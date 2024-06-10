@@ -13,4 +13,5 @@ sealed class Destination(val route:String) {
     object  ReservationDetails:Destination("reservationDetails/{resId}"){
         fun createRoute(resId:Int) = "reservationDetails/$resId"
     }
+    object  MapPage:Destination("MapPage")
 }

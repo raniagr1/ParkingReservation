@@ -152,7 +152,7 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
 
         Column(
             modifier = Modifier
-                .padding(16.dp)
+
                 .fillMaxSize()
                 .background(Color(0xFFF0F0F0)),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -266,6 +266,7 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(text = "Select the Exit Time", fontSize = 18.sp)
                 }
+                Spacer(modifier = Modifier.height(14.dp))//
                 Text(text = "Selected Exit Time: ${exitTimeState.value}") // Display selected exit time
                 Spacer(modifier = Modifier.height(24.dp))
                 // Date Picker dialog

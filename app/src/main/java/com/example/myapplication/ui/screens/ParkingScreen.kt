@@ -49,7 +49,7 @@ import com.example.myapplication.ui.viewmodels.ParkingViewModel
 fun ParkingScreen(parkingModel: ParkingViewModel,navController: NavHostController) {
     val context = LocalContext.current
     Column(
-        modifier = Modifier.fillMaxHeight(0.91F),
+        modifier = Modifier.fillMaxHeight(0.91F).background(Color(0xFFF0F0F0)),
         verticalArrangement = Arrangement.Top
     ) {
         // Top Row with Welcome message, Back button, and Notifications button
