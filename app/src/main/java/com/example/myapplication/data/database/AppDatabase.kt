@@ -75,7 +75,7 @@ class Converters {
     }
 }
 
-@Database(entities = [ Reservation::class], version = 2)
+@Database(entities = [ Reservation::class], version = 3)
 @TypeConverters(Converters::class)
 abstract class AppDatabase:RoomDatabase() {
 
@@ -89,7 +89,7 @@ abstract class AppDatabase:RoomDatabase() {
                 if (instance == null) {
                     instance =
                         Room.databaseBuilder(context, AppDatabase::class.java,
-                            "db_projet").addMigrations(MIGRATION_1_2).build()
+                            "db_projet").addMigrations(MIGRATION_2_3).build()
                     INSTANCE = instance
                 }
 
@@ -100,6 +100,12 @@ abstract class AppDatabase:RoomDatabase() {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE reservations ADD COLUMN placeNum INTEGER")
         }}
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE reservations ADD COLUMN imgUrl TEXT")
+                database.execSQL("ALTER TABLE reservations ADD COLUMN parkName TEXT")
+                database.execSQL("ALTER TABLE reservations ADD COLUMN totalPrice REAL")
+            }}
     }
 
 }

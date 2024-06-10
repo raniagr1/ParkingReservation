@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -48,7 +49,7 @@ import com.example.myapplication.ui.viewmodels.ParkingViewModel
 fun ParkingScreen(parkingModel: ParkingViewModel,navController: NavHostController) {
     val context = LocalContext.current
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxHeight(0.91F),
         verticalArrangement = Arrangement.Top
     ) {
         // Top Row with Welcome message, Back button, and Notifications button
@@ -89,34 +90,7 @@ fun ParkingScreen(parkingModel: ParkingViewModel,navController: NavHostControlle
                 )
             }
         }
-       /* Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Search Bar
-            TextField(
-                value = "", // Add search functionality here
-                onValueChange = { },
-                textStyle = MaterialTheme.typography.titleLarge,
-                colors = TextFieldDefaults.textFieldColors(
-                    cursorColor = Color.Cyan, // Sky blue color
-                    containerColor = Color.White,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
-                placeholder = { Text("Search", color = Color.Gray) },
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 8.dp)
-            )
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Search",
-                modifier = Modifier.size(24.dp)
-            )
-        }*/
+
         // Title
         Text(
             text = "Parkings List",
@@ -189,85 +163,3 @@ fun DisplayMessage(parkingModel: ParkingViewModel){
 }
   //  val parkingList = parkingViewModel.allParkings.collectAsState()
 
- /*   Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Top
-    ) {
-        // Top Row with Welcome message, Back button, and Notifications button
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Back button
-            IconButton(
-                onClick = {
-                    // Handle back button action
-                    navController.popBackStack()
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back",
-                    tint = MaterialTheme.colorScheme.primary// Sky blue color
-                )
-            }
-            Text(
-                text = "Welcome User!",
-                style = MaterialTheme.typography.headlineLarge,
-                color = Color.White, // White color
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-            )
-            // Notification button
-            IconButton(
-                onClick = {
-                    // Handle notification button action
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Notifications,
-                    contentDescription = "Notifications",
-                    tint = MaterialTheme.colorScheme.primary // Sky blue color
-                )
-            }
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-        // Search Bar
-        TextField(
-            value = "", // Add search functionality here
-            onValueChange = { },
-            textStyle = MaterialTheme.typography.titleLarge,
-            colors = TextFieldDefaults.textFieldColors(
-                cursorColor = Color.Cyan, // Sky blue color
-                containerColor = Color.White,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
-            placeholder = { Text("Search", color = Color.Gray) },
-            modifier = Modifier
-                .weight(1f)
-                .padding(end = 8.dp)
-        )
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Search",
-                modifier = Modifier.size(24.dp)
-            )
-        }
-        // Title
-        Text(
-            text = "Parkings List",
-            style = MaterialTheme.typography.titleLarge,
-            color = Color.White, // White color
-            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-        )
-
-        // Parking List
-        ParkingList(parkingList = parkingList.value, navController)
-    }
-}*/

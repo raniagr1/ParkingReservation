@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -50,7 +51,7 @@ fun DisplayDetail(parkingId: Int, parkingViewModel: ParkingViewModel, navControl
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = 72.dp) // Give space for the bottom button
+                    .padding(bottom = 120.dp) // Added padding to avoid overlap with TabView
                     .verticalScroll(rememberScrollState())
             ) {
                 // Loading indication
@@ -95,37 +96,48 @@ fun DisplayDetail(parkingId: Int, parkingViewModel: ParkingViewModel, navControl
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     Text(
-                        text = park.rating.toString(),
+                        text = "Located in ${park.commune}",
                         color = Color(0xFF578dfd),
                         fontSize = 16.sp,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     Text(
-                        text = park.description,
+
+                        text = "Description ",
                         color = Color.Gray,
                         fontSize = 16.sp,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                     Text(
-                        text = "Price per place",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    )
-                    Text(
-                        text = park.pricePerHour.toString(),
+
+                        text = park.description,
+                        color = Color.Gray,
                         fontSize = 16.sp,
-                        color = Color.DarkGray,
-                        modifier = Modifier.padding(bottom = 24.dp)
+                        modifier = Modifier.padding(bottom = 16.dp)
                     )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+
+                        Icon(
+                            imageVector = Icons.Default.AttachMoney,
+                            contentDescription = "Money Icon",
+                            tint = Color(0xFF0087de),
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(
+                            text = park.pricePerHour.toString()+"DA per Hour",
+                            fontSize = 16.sp,
+                            color = Color.DarkGray,
+                            modifier = Modifier.padding(bottom = 24.dp)
+                        )}
+
+
                 }
             }
 
             // Booking Button at the Bottom Center
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxHeight(0.91F)
                     .padding(16.dp),
                 contentAlignment = Alignment.BottomCenter
             ) {
@@ -145,35 +157,7 @@ fun DisplayDetail(parkingId: Int, parkingViewModel: ParkingViewModel, navControl
                         fontSize = 16.sp,
                         modifier = Modifier.padding(8.dp)
                     )
-
                 }
-
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                contentAlignment = Alignment.BottomCenter
-            ) {
-                Button(
-                    shape = RoundedCornerShape(24.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0087de)),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    onClick = {
-                        navController.navigate(Destination.Reservation.createRoute(park.id))
-                    }
-                ) {
-                    Text(
-                        text = "Book a place",
-                        color = Color.White,
-                        fontSize = 16.sp,
-                        modifier = Modifier.padding(8.dp)
-                    )
-
-                }
-
             }
         }
     } ?: run {

@@ -79,13 +79,13 @@ fun ReservationDetails(reservationId: Int, reservationViewModel: ReservationsVie
 
             Text("Payment Validated: ${if (reservation.paymentValidated) "Yes" else "No"}")
 */
-            ReservationDetailsScreen(reservation.parkName?:"",SimpleDateFormat("yyyy-MM-dd").format(reservation.date),reservation.reservationId,reservation.placeNum?:0,reservation.entryTime,reservation.exitTime)
+            ReservationDetailsScreen(reservation.parkName?:"",SimpleDateFormat("yyyy-MM-dd").format(reservation.date),reservation.reservationId,reservation.placeNum?:0,reservation.entryTime,reservation.exitTime,reservation.totalPrice.toString())
         }
     }
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReservationDetailsScreen(parkName:String,date:String,reservNum:Int,placeNum:Int,entryTime:String,exitTime:String) {
+fun ReservationDetailsScreen(parkName:String,date:String,reservNum:Int,placeNum:Int,entryTime:String,exitTime:String,total:String) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -166,7 +166,7 @@ fun ReservationDetailsScreen(parkName:String,date:String,reservNum:Int,placeNum:
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "$ 402.00",
+                        text = "$total DA",
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -174,18 +174,24 @@ fun ReservationDetailsScreen(parkName:String,date:String,reservNum:Int,placeNum:
             }
 
             Spacer(modifier = Modifier.height(24.dp))
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                elevation = CardDefaults.cardElevation(4.dp)
+
             ) {
-                QrCodePreview("Reservation number: ${reservNum}")
+                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                    QrCodePreview("Reservation number: ${reservNum}")
+                }
+
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // Note Section
             Text(
-                text = "Just show your QR code while boarding the bus.",
+                text = "Just show your QR code when entering the park",
                 fontSize = 14.sp,
                 color = Color.Gray,
                 textAlign = TextAlign.Center,

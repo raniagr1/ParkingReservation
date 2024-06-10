@@ -55,7 +55,7 @@ fun ReservationItem(reservation: Reservation, navController: NavHostController) 
 
         ) {
             AsyncImage(
-                model = reservation.imgUrl
+                model = URL+reservation.imgUrl
                 ,
 
                 // placeholder = painterResource(id = R.drawable.parking3),

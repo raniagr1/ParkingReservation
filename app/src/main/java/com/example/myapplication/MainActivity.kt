@@ -184,10 +184,14 @@ fun NavigationExample(
     reservationsViewModel: ReservationsViewModel,
     tabBarItems: List<TabBarItem>
 ) {
-    Scaffold(bottomBar = { Column {
-        Spacer(modifier = Modifier.height(16.dp))
-        TabView(tabBarItems, navController)
-    }  }) {
+    Scaffold(
+        bottomBar = {
+            Column {
+                Spacer(modifier = Modifier.height(8.dp))
+                TabView(tabBarItems, navController)
+            }
+        }
+    ) {
         Spacer(modifier = Modifier.height(16.dp))
         NavHost(navController = navController, startDestination = "ParkingScreen") {
             composable(Destination.List.route) { ParkingScreen(parkingViewModel, navController) }

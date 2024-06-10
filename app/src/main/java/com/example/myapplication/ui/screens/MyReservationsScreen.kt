@@ -46,7 +46,7 @@ fun MyReservationsScreen(
     Column(
         modifier = Modifier
             .padding(16.dp)
-            .fillMaxSize()
+            .fillMaxHeight(0.91F)
     ) {
         IconButton(
             onClick = { showDatePicker = true },

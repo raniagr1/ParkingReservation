@@ -15,13 +15,13 @@ data class Reservation(
     val exitTime: String,
     val paymentValidated: Boolean,
     val placeNum: Int? = null,
+    var imgUrl: String? = null,
+    var parkName: String? = null,
+    var totalPrice: Double? = null
 
 ) {
     @Ignore
     var dateString: String = ""
-    @Ignore
-    var imgUrl: String = ""
-    @Ignore
-    var parkName: String = ""
+
 }
 

@@ -140,7 +140,7 @@ fun ParkingListItem(parking: Parking, navController: NavHostController) {
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = "Spots left: ${parking.capacity}",
+                        text = "Capacity: ${parking.capacity}",
                         color = Color.Gray,
                         modifier = Modifier.padding(start = 4.dp)
                     )

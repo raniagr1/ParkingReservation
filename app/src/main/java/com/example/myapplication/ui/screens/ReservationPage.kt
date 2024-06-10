@@ -82,6 +82,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.myapplication.Destination
+import com.example.myapplication.URL
 import com.example.myapplication.data.model.Parking
 import com.example.myapplication.ui.theme.Pink40
 import com.example.myapplication.ui.theme.Purple80
@@ -156,7 +157,7 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            Text(text = "Make Reservation for", color = Color(0xFFADD8E6), fontSize = 22.sp, fontWeight = FontWeight.Bold,
+            Text(text = "Make a Reservation ", color = Color(0xFF0087de), fontSize = 22.sp, fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(vertical = 16.dp))
             Column(
 
@@ -200,7 +201,7 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
                         .height(55.dp),
                     shape = RoundedCornerShape(24.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFADD8E6)
+                        containerColor = Color(0xFF0087de)
                     ),
                 ) {
                     Icon(
@@ -226,7 +227,7 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
                         .height(55.dp),
                     shape = RoundedCornerShape(24.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFADD8E6)
+                        containerColor = Color(0xFF0087de)
                     ),
                 ) {
                     Icon(
@@ -251,7 +252,7 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
                         .height(55.dp),
                     shape = RoundedCornerShape(24.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFADD8E6)
+                        containerColor = Color(0xFF0087de)
                     ),
                 ) {
                     Icon(
@@ -385,9 +386,15 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
                 Spacer(modifier = Modifier.height(7.dp))
                 Text(text ="The total for park ${parking!!.id} price is ${calculatedPrice} DA" , color = Color(0xFFADD8E6))
                 if (dateState.value.isNotEmpty() && entryTimeState.value.isNotEmpty() && exitTimeState.value.isNotEmpty()) {
-                    Button(
+                    if (!isValidReservationTime(entryTimeState.value, exitTimeState.value)) {
+                        Text(
+                            text = "Exit time must be after entry time.",
+                            color = Color.Red,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    } else {   Button(
                         onClick = {
-                            if (isValidReservationTime(entryTimeState.value, exitTimeState.value)) {
+
 
                                 paymentValidatedState.value = true // Set payment validated state to true
                             val formattedDate = convertStringToDate(dateState.value)
@@ -399,8 +406,10 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
                                 date = formattedDate,
                                 entryTime = entryTimeState.value,
                                 exitTime = exitTimeState.value,
-                                paymentValidated = true // Payment is already validated
-
+                                paymentValidated = true ,// Payment is already validated
+                                imgUrl =parking?.image!! ,
+                                parkName = parking?.name!!,
+                                totalPrice = calculatedPrice!!,
                             ).apply {
                                 dateString = dateState.value
                             }
@@ -411,7 +420,7 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
                           reservationId.value =  reservationVM.reservationNum.value
                             }
 
-                        },
+                        ,
 
                         modifier = Modifier.fillMaxWidth(0.8f).height(55.dp),
                         shape = RoundedCornerShape(24.dp),
@@ -421,7 +430,8 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
                     ) {
                         Text(text = "Validate Payment", fontSize = 18.sp)
                     }
-                }
+                }}
+
                 if (paymentValidatedState.value) {
                     Toast.makeText(
                         context,
@@ -503,15 +513,21 @@ private fun calculateReservationPrice(entryTime: String, exitTime: String, price
     }
     return 0.0
 }
-private fun isValidReservationTime(entryTime: String, exitTime: String): Boolean {
-    if (entryTime.isNotEmpty() && exitTime.isNotEmpty()) {
-        val entryParts = entryTime.split(":").map { it.toInt() }
-        val exitParts = exitTime.split(":").map { it.toInt() }
-        val entryTotalMinutes = entryParts[0] * 60 + entryParts[1]
-        val exitTotalMinutes = exitParts[0] * 60 + exitParts[1]
-        return exitTotalMinutes > entryTotalMinutes
+fun isValidReservationTime(entryTime: String, exitTime: String): Boolean {
+    val entryTimeParts = entryTime.split(":").map { it.toInt() }
+    val exitTimeParts = exitTime.split(":").map { it.toInt() }
+
+    val entryCalendar = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, entryTimeParts[0])
+        set(Calendar.MINUTE, entryTimeParts[1])
     }
-    return false
+
+    val exitCalendar = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, exitTimeParts[0])
+        set(Calendar.MINUTE, exitTimeParts[1])
+    }
+
+    return exitCalendar.after(entryCalendar)
 }
 
 

@@ -67,7 +67,10 @@ class ReservationsViewModel(private val repository: ReservationRepository) : Vie
                         entryTime = request.entryTime,
                         exitTime = request.exitTime,
                         paymentValidated = true, // Payment is already validated
-                        placeNum=response.body()?.place_num!!
+                        placeNum=response.body()?.place_num!!,
+                        imgUrl = request.imgUrl,
+                        parkName = request.parkName,
+                        totalPrice = request.totalPrice
 
                     ).apply {
                         dateString = request.dateString
