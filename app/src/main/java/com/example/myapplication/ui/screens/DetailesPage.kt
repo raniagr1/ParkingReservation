@@ -95,17 +95,39 @@ fun DisplayDetail(parkingId: Int, parkingViewModel: ParkingViewModel, navControl
                         color = Color(0xFF0087de),
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    Text(
-                        text = "Located in ${park.commune}",
-                        color = Color(0xFF578dfd),
-                        fontSize = 16.sp,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
+                    Row(horizontalArrangement = Arrangement.SpaceAround) {
+                        Text(
+                            text = "Located in ${park.commune}",
+                            color = Color(0xFF578dfd),
+                            fontSize = 16.sp,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+
+
+                        Row(verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.End
+                            ) {
+
+                            Icon(
+                                imageVector = Icons.Default.AttachMoney,
+                                contentDescription = "Money Icon",
+                                tint = Color(0xFF0087de),
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = "Price: ${park.pricePerHour} DA",
+                                color = Color.Gray,
+                                fontSize = 12.sp,
+                                ///modifier = Modifier.padding(top = 4.dp)
+                            )}
+                    }
+
                     Text(
 
                         text = "Description ",
                         color = Color.Gray,
                         fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                     Text(
@@ -115,20 +137,6 @@ fun DisplayDetail(parkingId: Int, parkingViewModel: ParkingViewModel, navControl
                         fontSize = 16.sp,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-
-                        Icon(
-                            imageVector = Icons.Default.AttachMoney,
-                            contentDescription = "Money Icon",
-                            tint = Color(0xFF0087de),
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Text(
-                            text = park.pricePerHour.toString()+"DA per Hour",
-                            fontSize = 16.sp,
-                            color = Color.DarkGray,
-                            modifier = Modifier.padding(bottom = 24.dp)
-                        )}
 
 
                 }

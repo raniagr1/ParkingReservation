@@ -153,12 +153,14 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
         Column(
             modifier = Modifier
                 .padding(16.dp)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .background(Color(0xFFF0F0F0)),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
             Text(text = "Make a Reservation ", color = Color(0xFF0087de), fontSize = 22.sp, fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(vertical = 16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             Column(
 
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -180,7 +182,7 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
                         Text(text = "Park location: ${parking?.commune}")
                         Text(text = "Park price: : ${parking?.pricePerHour}")
                     }}}
-
+            Spacer(modifier = Modifier.height(20.dp))
 
             Column(
                 modifier = Modifier
@@ -213,10 +215,10 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(text = "Select The date", fontSize = 18.sp)
                 }
-                Spacer(modifier = Modifier.height(4.dp))//
+                Spacer(modifier = Modifier.height(14.dp))//
                 Text(text = "Selected Date: ${dateState.value}") // Display selected date
            //     Text(text = "Selected Date: ${SimpleDateFormat("yyyy-MM-dd").parse(dateState.value)}") // Display selected date
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(14.dp))
                 // Input for entry time
                 Button(
                     onClick = {
@@ -239,9 +241,9 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(text = "Select the Entry Time ", fontSize = 18.sp)
                 }
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(14.dp))
                 Text(text = "Selected Entry Time: ${entryTimeState.value}") // Display selected entry time
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(14.dp))
                 // Input for exit time
                 Button(
                     onClick = {
@@ -265,7 +267,7 @@ fun ReservationBookingScreen(parkingId:Int, reservationVM: ReservationsViewModel
                     Text(text = "Select the Exit Time", fontSize = 18.sp)
                 }
                 Text(text = "Selected Exit Time: ${exitTimeState.value}") // Display selected exit time
-
+                Spacer(modifier = Modifier.height(24.dp))
                 // Date Picker dialog
                 if (showDatePicker) {
                     DatePickerDialog(
