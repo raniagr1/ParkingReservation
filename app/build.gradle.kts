@@ -101,6 +101,14 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation ("com.google.maps.android:android-maps-utils:2.2.0")
     implementation ("com.google.maps.android:maps-compose:2.0.0")
+    implementation("androidx.compose.material:material-icons-extended:1.4.3")
+    implementation("com.lightspark:compose-qr-code:1.0.1")
+
+
+    implementation("com.google.firebase:firebase-messaging-ktx:23.2.1")
+    // notification permission
+    implementation("com.google.accompanist:accompanist-permissions:0.31.1-alpha")
+    implementation("androidx.datastore:datastore-preferences-android:1.1.1")
 
     // Declare dependency between tasks
     tasks.matching { it.name.startsWith("merge") && it.name.endsWith("Resources") }.configureEach {

@@ -14,10 +14,6 @@ data class Parking(
     val pricePerHour: Double,
     val description: String,
     val rating: Float,
-    val longitude:Double,
-    val latitude:Double
+    val longitude:Float,
+    val latitude:Float
 )
-
-
-
-

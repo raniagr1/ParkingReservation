@@ -1,4 +1,5 @@
 package com.example.myapplication.data.database
+
 /*
 import PrepopulateRoomCallback
 import android.content.Context
@@ -48,3 +49,64 @@ abstract class AppDatabase : RoomDatabase() {
     }
 }
 */
+import android.content.Context
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.myapplication.data.local.dao.ReservationDao
+import com.example.myapplication.data.model.Reservation
+import java.text.SimpleDateFormat
+import java.util.Date
+
+class Converters {
+    private val dateFormat = SimpleDateFormat("dd/MM/yyyy")
+
+    @TypeConverter
+    fun toTimestamp(date: Date?): String? {
+        return date?.let { dateFormat.format(it) }
+    }
+
+    @TypeConverter
+    fun fromTimestamp(dateString: String?): Date {
+        return dateString.let { dateFormat.parse(it) }
+    }
+}
+
+@Database(entities = [ Reservation::class], version = 3)
+@TypeConverters(Converters::class)
+abstract class AppDatabase:RoomDatabase() {
+
+    abstract fun getReservationDao(): ReservationDao
+
+    companion object {
+        private var INSTANCE: AppDatabase? = null
+        fun getInstance(context: Context): AppDatabase {
+            synchronized(this) {
+                var instance = INSTANCE
+                if (instance == null) {
+                    instance =
+                        Room.databaseBuilder(context, AppDatabase::class.java,
+                            "db_projet").addMigrations(MIGRATION_2_3).build()
+                    INSTANCE = instance
+                }
+
+                return instance
+            }
+        }
+        private val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE reservations ADD COLUMN placeNum INTEGER")
+            }}
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE reservations ADD COLUMN imgUrl TEXT")
+                database.execSQL("ALTER TABLE reservations ADD COLUMN parkName TEXT")
+                database.execSQL("ALTER TABLE reservations ADD COLUMN totalPrice REAL")
+            }}
+    }
+
+}

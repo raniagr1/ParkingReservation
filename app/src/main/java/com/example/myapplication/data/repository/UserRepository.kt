@@ -1,6 +1,6 @@
 package com.example.myapplication.data.repository
 
-import com.example.myapplication.Endpoint
+import com.example.myapplication.common.Endpoint
 import com.example.myapplication.data.model.DataClass
 import com.example.myapplication.data.model.LoginRequest
 import com.example.myapplication.data.model.User
@@ -12,7 +12,7 @@ class userRepository(private val endpoint: Endpoint) {
     suspend fun registerUser(user: User): Response<Unit> {
         return endpoint.registerUser(user)
     }
-    suspend fun userExists(loginRequest:LoginRequest ): Response<DataClass> {
+    suspend fun userExists(loginRequest: LoginRequest): Response<DataClass> {
 //        val loginRequest = LoginRequest(userName, passwrd)
         return endpoint.userExist(loginRequest)
     }
