@@ -115,12 +115,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
 
-            val homeTab = TabBarItem(
-                title = "Home",
-                selectedIcon = Icons.Filled.Home,
-                unselectedIcon = Icons.Outlined.Home,
-                destination = Destination.Home.route
-            )
+
             val parkingListTab = TabBarItem(
                 title = "Parking List",
                 selectedIcon = Icons.Filled.List,
@@ -144,7 +139,7 @@ class MainActivity : ComponentActivity() {
             // Define a coroutine scope
             val coroutineScope = lifecycleScope
             // creating a list of all the tabs
-            val tabBarItems = listOf(homeTab, parkingListTab, mapTab, myReservationsTab)
+            val tabBarItems = listOf(parkingListTab, mapTab, myReservationsTab)
 
             myapplicationTheme {
                 FirebaseMessagingScreen()

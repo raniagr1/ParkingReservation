@@ -64,7 +64,7 @@ fun MyReservationsScreen(userViewModel: UserViewModel, navController: NavHostCon
                     )
                 }
                 Text(
-                    text = "Welcome User!",
+                    text = "Welcome!",
                     style = MaterialTheme.typography.headlineLarge,
                     color = Color.White, // White color
                     modifier = Modifier.padding(start = 16.dp, top = 16.dp)

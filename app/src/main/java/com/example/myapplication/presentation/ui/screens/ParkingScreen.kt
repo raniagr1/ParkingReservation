@@ -58,7 +58,7 @@ fun ParkingScreen(parkingModel: ParkingViewModel, navController: NavHostControll
                 )
             }
             Text(
-                text = "Welcome User!",
+                text = "Welcome!",
                 style = MaterialTheme.typography.headlineLarge,
                 color = Color(0xFF0087de), // White color
                 modifier = Modifier.padding(start = 16.dp, top = 16.dp)
