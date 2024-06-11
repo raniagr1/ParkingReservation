@@ -64,7 +64,7 @@ import com.example.myapplication.presentation.ui.screens.DisplayDetail
 import com.example.myapplication.presentation.ui.screens.LoginPage
 import com.example.myapplication.presentation.ui.screens.MapPage
 import com.example.myapplication.presentation.ui.screens.MyReservationsScreen
-import com.example.myapplication.presentation.ui.screens.ReservationBookingScreen
+
 import com.example.myapplication.presentation.ui.screens.ReservationDetails
 import com.example.myapplication.presentation.ui.screens.SignUpPage
 //import com.example.myapplication.ui.screens.firebaseAuthWithGoogle
@@ -81,6 +81,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.CoroutineScope
 import com.example.myapplication.presentation.viewmodels.TokenViewModel
+import com.example.myapplication.ui.screens.ReservationBookingScreen
 import com.google.firebase.messaging.FirebaseMessaging
 
 class MainActivity : ComponentActivity() {
